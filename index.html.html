@@ -1,0 +1,2655 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>מחשבון ויועץ ציונים — מכללת SeaTech (קציני ים עכו)</title>
+
+  <!-- Google Fonts: Heebo & Assistant for clean Hebrew maritime-engineering UI -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700;800&family=Heebo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS CDN with Class-Based Dark Mode -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Heebo', 'Assistant', 'system-ui', 'sans-serif'],
+          },
+          colors: {
+            navy: {
+              850: '#13203d',
+              900: '#0f172a',
+              950: '#080e1d',
+            },
+            ocean: {
+              50: '#f0f9ff',
+              100: '#e0f2fe',
+              400: '#38bdf8',
+              500: '#0ea5e9',
+              600: '#0284c7',
+              700: '#0369a1',
+              900: '#0c4a6e',
+            }
+          }
+        }
+      }
+    };
+  </script>
+</head>
+<body class="bg-slate-50 dark:bg-navy-950 text-slate-800 dark:text-slate-100 font-sans antialiased min-h-screen transition-colors duration-200 selection:bg-ocean-500/20 selection:text-ocean-900 dark:selection:text-ocean-100">
+
+  <!-- Toast Notification Container (Replaces alert()/confirm()) -->
+  <div id="toast-container" class="fixed bottom-4 left-4 z-50 flex flex-col gap-2 pointer-events-none max-w-xs sm:max-w-sm"></div>
+
+  <!-- ===================================================================== -->
+  <!-- TOP HEADER: SeaTech Branding, Student Chip, Auth, Presets, Theme      -->
+  <!-- ===================================================================== -->
+  <header class="bg-gradient-to-l from-navy-900 via-[#172c5e] to-navy-900 text-white border-b border-sky-400/20 shadow-md">
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-3.5 sm:py-4">
+      <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
+
+        <!-- Brand & College Title -->
+        <div class="flex items-center justify-between gap-3">
+          <div class="flex items-center gap-3 min-w-0">
+            <!-- Maritime Engineering Crest SVG -->
+            <div class="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-br from-ocean-500/30 to-sky-400/10 border border-sky-400/35 flex items-center justify-center shrink-0 shadow-inner">
+              <svg class="w-6 h-6 sm:w-7 sm:h-7 text-sky-300" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="12" cy="5" r="2.2" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 7.2V21M7.5 11.5h9M5 14.5c0 3.8 3.1 6.5 7 6.5s7-2.7 7-6.5" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4.2 15.3L5 14.5l1.2.9M19.8 15.3L19 14.5l-1.2.9" />
+              </svg>
+            </div>
+            <div class="min-w-0">
+              <div class="flex items-center gap-2 flex-wrap">
+                <h1 class="text-base sm:text-xl font-extrabold tracking-tight text-white leading-tight truncate">
+                  מחשבון ויועץ ציונים — מכללת SeaTech
+                </h1>
+                <span class="hidden sm:inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold bg-sky-500/20 text-sky-200 border border-sky-400/30">
+                  קציני ים עכו
+                </span>
+              </div>
+              <div class="flex items-center gap-2 mt-1 flex-wrap">
+                <!-- Editable Student Profile Chip -->
+                <button id="btn-edit-profile" type="button" class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white/10 hover:bg-white/20 border border-white/15 text-xs font-medium text-sky-100 transition-colors cursor-pointer">
+                  <svg class="w-3.5 h-3.5 text-sky-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  </svg>
+                  <span id="header-student-label">הגדר שם וכיתה (אופציונלי)</span>
+                  <svg class="w-3 h-3 opacity-70" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                  </svg>
+                </button>
+
+                <!-- Live Cloud Save Status Pill -->
+                <span id="cloud-status-pill" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-slate-800/80 text-slate-300 border border-slate-700/80">
+                  <span id="cloud-status-dot" class="w-1.5 h-1.5 rounded-full bg-sky-400"></span>
+                  <span id="cloud-status-text">מתחבר לענן...</span>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Mobile Quick Theme Toggle -->
+          <button id="btn-theme-mobile" type="button" aria-label="החלף מצב בהיר או כהה" class="lg:hidden p-2.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/15 text-sky-200 transition-all cursor-pointer shrink-0">
+            <svg class="w-5 h-5 theme-icon-sun hidden" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+            </svg>
+            <svg class="w-5 h-5 theme-icon-moon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+            </svg>
+          </button>
+        </div>
+
+        <!-- Header Action Buttons -->
+        <div class="flex flex-wrap items-center gap-2">
+          <!-- Track Presets Button -->
+          <button id="btn-open-presets" type="button" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-ocean-500/20 hover:bg-ocean-500/35 border border-sky-400/35 text-sky-100 text-xs sm:text-sm font-bold transition-all cursor-pointer active:scale-95">
+            <svg class="w-4 h-4 text-sky-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+            </svg>
+            <span>תבניות מסלול</span>
+          </button>
+
+          <!-- Google Sign-In / Sync Button -->
+          <button id="btn-google-auth" type="button" class="inline-flex items-center gap-2 px-3 py-2 rounded-xl bg-white hover:bg-slate-100 text-slate-900 border border-white/20 text-xs sm:text-sm font-bold shadow-xs transition-all cursor-pointer active:scale-95">
+            <svg id="google-icon" class="w-4 h-4 shrink-0" viewBox="0 0 24 24" aria-hidden="true">
+              <path fill="#4285F4" d="M23.745 12.27c0-.79-.07-1.54-.19-2.27h-11.3v4.51h6.47c-.29 1.48-1.14 2.73-2.4 3.58v3h3.86c2.26-2.09 3.56-5.17 3.56-8.82z"/>
+              <path fill="#34A853" d="M12.255 24c3.24 0 5.95-1.08 7.93-2.91l-3.86-3c-1.08.72-2.45 1.16-4.07 1.16-3.13 0-5.78-2.11-6.73-4.96h-3.98v3.09C3.515 21.3 7.615 24 12.255 24z"/>
+              <path fill="#FBBC05" d="M5.525 14.29c-.25-.72-.38-1.49-.38-2.29s.14-1.57.38-2.29V6.62h-3.98a11.86 11.86 0 000 10.76l3.98-3.09z"/>
+              <path fill="#EA4335" d="M12.255 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C18.205 1.19 15.495 0 12.255 0c-4.64 0-8.74 2.7-10.71 6.62l3.98 3.09c.95-2.85 3.6-4.96 6.73-4.96z"/>
+            </svg>
+            <span id="google-auth-text">התחבר עם Google לשמירה בין מכשירים</span>
+          </button>
+
+          <!-- Desktop Theme Toggle -->
+          <button id="btn-theme-desktop" type="button" aria-label="החלף מצב בהיר או כהה" class="hidden lg:inline-flex items-center justify-center p-2.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/15 text-sky-200 transition-all cursor-pointer">
+            <svg class="w-4 h-4 theme-icon-sun hidden" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+            </svg>
+            <svg class="w-4 h-4 theme-icon-moon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+            </svg>
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </header>
+
+  <!-- ===================================================================== -->
+  <!-- STICKY REAL-TIME DASHBOARD: "איפה אני עומד כרגע"                       -->
+  <!-- ===================================================================== -->
+  <section aria-label="לוח בקרה בזמן אמת" class="sticky top-0 z-40 bg-white/95 dark:bg-navy-900/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 shadow-sm transition-colors">
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-2.5 sm:py-3">
+
+      <!-- Mode Switcher & Mobile Collapse Row -->
+      <div class="flex flex-wrap items-center justify-between gap-2 mb-2.5">
+        <div class="flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-ocean-500 animate-pulse"></span>
+          <span class="text-xs sm:text-sm font-extrabold text-slate-800 dark:text-slate-100">איפה אני עומד כרגע</span>
+          <span id="dash-active-badge" class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">0 קורסים פעילים</span>
+        </div>
+
+        <!-- Simple vs Weighted Switch -->
+        <div class="flex items-center gap-2">
+          <div class="inline-flex items-center bg-slate-100 dark:bg-slate-800 p-0.5 rounded-xl border border-slate-200 dark:border-slate-700 text-[11px] sm:text-xs font-bold">
+            <button id="btn-mode-simple" type="button" class="px-2.5 sm:px-3 py-1 rounded-lg transition-all cursor-pointer">
+              ממוצע פשוט
+            </button>
+            <button id="btn-mode-weighted" type="button" class="px-2.5 sm:px-3 py-1 rounded-lg transition-all cursor-pointer">
+              משוקלל (שעות/נ״ז)
+            </button>
+          </div>
+          <button id="btn-toggle-sticky-compact" type="button" class="sm:hidden px-2 py-1 rounded-lg text-[11px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 cursor-pointer">
+            צמצם
+          </button>
+        </div>
+      </div>
+
+      <!-- 4 KPI Cards Grid -->
+      <div id="kpi-grid" class="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
+
+        <!-- KPI 1: Official Current GPA -->
+        <div class="rounded-2xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200/90 dark:border-slate-700/80 p-2.5 sm:p-3.5 flex flex-col justify-between">
+          <div class="flex items-center justify-between gap-1">
+            <span class="text-[11px] sm:text-xs font-bold text-slate-500 dark:text-slate-400">ממוצע רשמי נוכחי</span>
+            <span class="hidden sm:inline-flex text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-slate-200/80 dark:bg-slate-700 text-slate-600 dark:text-slate-300">נבחנתי</span>
+          </div>
+          <div class="mt-1 flex items-baseline gap-2">
+            <span id="kpi-official-gpa" class="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tabular-nums leading-none">—</span>
+          </div>
+          <p id="kpi-official-sub" class="mt-1.5 text-[11px] font-medium text-slate-500 dark:text-slate-400 truncate">
+            טרם הוזנו ציונים
+          </p>
+        </div>
+
+        <!-- KPI 2: Simulated Final GPA -->
+        <div class="rounded-2xl bg-gradient-to-br from-ocean-50 to-white dark:from-ocean-900/35 dark:to-slate-800/80 border border-ocean-200 dark:border-ocean-700/60 p-2.5 sm:p-3.5 flex flex-col justify-between shadow-2xs">
+          <div class="flex items-center justify-between gap-1">
+            <span class="text-[11px] sm:text-xs font-bold text-ocean-800 dark:text-sky-300">ממוצע סופי בסימולציה</span>
+            <span id="kpi-sim-badge" class="inline-flex items-center px-1.5 sm:px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300">—</span>
+          </div>
+          <div class="mt-1 flex items-baseline gap-2 flex-wrap">
+            <span id="kpi-sim-gpa" class="text-2xl sm:text-3xl font-black text-navy-900 dark:text-white tabular-nums leading-none">—</span>
+            <span id="kpi-sim-delta" class="text-[11px] font-bold text-slate-500 dark:text-slate-400"></span>
+          </div>
+          <p id="kpi-sim-vs-target" class="mt-1.5 text-[11px] font-semibold text-slate-600 dark:text-slate-300 truncate">
+            כולל מועדי ב׳ + קורסים עתידיים
+          </p>
+        </div>
+
+        <!-- KPI 3: My Target GPA & Moed B Threshold -->
+        <div class="col-span-2 lg:col-span-1 rounded-2xl bg-navy-900 dark:bg-slate-950 text-white border border-slate-800 dark:border-sky-500/30 p-2.5 sm:p-3.5 flex flex-col justify-between">
+          <div class="flex items-center justify-between gap-2">
+            <span class="text-[11px] sm:text-xs font-bold text-sky-300">היעד האישי שלי</span>
+            <div class="flex items-center gap-1">
+              <label for="input-target-gpa" class="sr-only">יעד ממוצע</label>
+              <input id="input-target-gpa" type="number" min="55" max="100" step="0.5" value="90" class="w-14 px-1.5 py-0.5 rounded-lg bg-slate-800 border border-sky-500/50 text-center text-sm font-black text-white tabular-nums focus:outline-none focus:ring-2 focus:ring-sky-400" />
+            </div>
+          </div>
+
+          <!-- Slider + Quick Goal Pills -->
+          <div class="mt-1.5 space-y-1.5">
+            <input id="slider-target-gpa" type="range" min="60" max="100" step="1" value="90" aria-label="סליידר יעד ממוצע" class="w-full h-1.5 rounded-lg appearance-none bg-slate-700 accent-sky-400 cursor-pointer" />
+            <div class="flex items-center justify-between gap-1">
+              <div class="flex items-center gap-1">
+                <button type="button" data-goal="85" class="goal-pill px-1.5 py-0.5 rounded-md text-[10px] font-bold cursor-pointer transition-colors">85</button>
+                <button type="button" data-goal="90" class="goal-pill px-1.5 py-0.5 rounded-md text-[10px] font-bold cursor-pointer transition-colors">90</button>
+                <button type="button" data-goal="92" class="goal-pill px-1.5 py-0.5 rounded-md text-[10px] font-bold cursor-pointer transition-colors">92</button>
+                <button type="button" data-goal="95" class="goal-pill px-1.5 py-0.5 rounded-md text-[10px] font-bold cursor-pointer transition-colors">95</button>
+                <button type="button" data-goal="98" class="goal-pill px-1.5 py-0.5 rounded-md text-[10px] font-bold cursor-pointer transition-colors">98</button>
+              </div>
+              <label class="inline-flex items-center gap-1 text-[10px] text-slate-300 font-semibold" title="רף ציון שממתחתיו תוצג התראה למועד ב׳">
+                <span>רף ב׳:</span>
+                <input id="input-moedb-threshold" type="number" min="55" max="99" value="85" class="w-10 px-1 py-0.5 rounded bg-slate-800 border border-slate-700 text-center text-[11px] font-bold text-amber-300 tabular-nums focus:outline-none focus:ring-1 focus:ring-amber-400" />
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- KPI 4: Max Possible Ceiling -->
+        <div class="col-span-2 lg:col-span-1 rounded-2xl bg-emerald-50/70 dark:bg-emerald-950/30 border border-emerald-200/80 dark:border-emerald-800/60 p-2.5 sm:p-3.5 flex flex-col justify-between">
+          <div class="flex items-center justify-between gap-1">
+            <span class="text-[11px] sm:text-xs font-bold text-emerald-900 dark:text-emerald-300">תקרת ממוצע מקסימלית</span>
+            <span class="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-200">100 בשאר</span>
+          </div>
+          <div class="mt-1 flex items-baseline gap-2 flex-wrap">
+            <span id="kpi-max-gpa" class="text-2xl sm:text-3xl font-black text-emerald-900 dark:text-emerald-200 tabular-nums leading-none">—</span>
+            <span id="kpi-max-no-moedb" class="text-[11px] font-semibold text-emerald-700 dark:text-emerald-400"></span>
+          </div>
+          <p id="kpi-max-sub" class="mt-1.5 text-[11px] font-medium text-emerald-800/80 dark:text-emerald-300/80 truncate">
+            אם תוציא 100 בכל הקורסים שנותרו
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================================================================== -->
+  <!-- MAIN CONTENT WORKSPACE                                                -->
+  <!-- ===================================================================== -->
+  <main class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-5 sm:py-6 space-y-6">
+
+    <!-- ONBOARDING CARD (Visible when student has 0 courses) -->
+    <section id="onboarding-card" class="hidden rounded-3xl bg-gradient-to-br from-white via-ocean-50/60 to-sky-50 dark:from-navy-900 dark:via-navy-850 dark:to-slate-900 border-2 border-dashed border-ocean-300 dark:border-ocean-700 p-5 sm:p-8 shadow-sm">
+      <div class="max-w-3xl mx-auto text-center">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-ocean-100 dark:bg-ocean-900/60 text-ocean-800 dark:text-sky-200 text-xs font-extrabold mb-3">
+          <span>ברוכים הבאים למחשבון הציונים של מכללת SeaTech</span>
+        </div>
+        <h2 class="text-xl sm:text-3xl font-black text-navy-900 dark:text-white tracking-tight">
+          בחר את המסלול שלך והתחל תוך שנייה
+        </h2>
+        <p class="text-sm sm:text-base text-slate-600 dark:text-slate-300 mt-2">
+          בחר תבנית קורסים מוכנה למגמה שלך, טען דוגמה להמחשה כדי לראות איך היועץ עובד, או התחל מרשימה ריקה בהתאמה אישית.
+        </p>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 mt-6 text-right">
+          <!-- Preset 1 -->
+          <button type="button" data-preset="mech_13" class="preset-trigger group p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 hover:border-ocean-500 dark:hover:border-ocean-400 hover:shadow-md transition-all cursor-pointer text-right flex flex-col justify-between gap-2">
+            <div>
+              <div class="flex items-center justify-between gap-2">
+                <span class="text-sm sm:text-base font-extrabold text-navy-900 dark:text-white group-hover:text-ocean-600 dark:group-hover:text-sky-400">הנדסאי מכונות — י״ג</span>
+                <span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-ocean-100 dark:bg-ocean-900/50 text-ocean-800 dark:text-sky-300">16 קורסים</span>
+              </div>
+              <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
+                לוגיקה, ניהול הייצור, מכונאות, סיב״ם, הידראוליקה, תרמודינמיקה, חוזק חומרים, אוטומציה, חשמל ועוד — מוכנים להזנת הציונים שלך.
+              </p>
+            </div>
+            <span class="text-xs font-bold text-ocean-600 dark:text-sky-400">טען מסלול מכונות ←</span>
+          </button>
+
+          <!-- Preset 2 -->
+          <button type="button" data-preset="elec_13" class="preset-trigger group p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 hover:border-ocean-500 dark:hover:border-ocean-400 hover:shadow-md transition-all cursor-pointer text-right flex flex-col justify-between gap-2">
+            <div>
+              <div class="flex items-center justify-between gap-2">
+                <span class="text-sm sm:text-base font-extrabold text-navy-900 dark:text-white group-hover:text-ocean-600 dark:group-hover:text-sky-400">הנדסאי אלקטרוניקה / חשמל</span>
+                <span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-indigo-100 dark:bg-indigo-900/50 text-indigo-800 dark:text-indigo-300">10 קורסים</span>
+              </div>
+              <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
+                מתמטיקה, תורת החשמל, אלקטרוניקה תקבילית, מערכות ספרתיות, שפת C, מיקרומעבדים, פיזיקה, בקרה ומעבדה.
+              </p>
+            </div>
+            <span class="text-xs font-bold text-ocean-600 dark:text-sky-400">טען מסלול אלקטרוניקה ←</span>
+          </button>
+
+          <!-- Preset 3: Demo -->
+          <button type="button" data-preset="demo_sample" class="preset-trigger group p-4 rounded-2xl bg-emerald-50/70 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/70 hover:border-emerald-500 hover:shadow-md transition-all cursor-pointer text-right flex flex-col justify-between gap-2">
+            <div>
+              <div class="flex items-center justify-between gap-2">
+                <span class="text-sm sm:text-base font-extrabold text-emerald-950 dark:text-emerald-200">טען דוגמה להמחשה</span>
+                <span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-emerald-200/80 dark:bg-emerald-900 text-emerald-900 dark:text-emerald-200">מומלץ להתנסות</span>
+              </div>
+              <p class="text-xs text-emerald-800/80 dark:text-emerald-300/80 mt-1 leading-relaxed">
+                טוען ציונים לדוגמה (חלקם נבחנים וחלקם עתידיים) כדי שתוכל לבדוק מיד את מנוע ההמלצות, סימולציית מועד ב׳ והגרף.
+              </p>
+            </div>
+            <span class="text-xs font-bold text-emerald-700 dark:text-emerald-400">הפעל מצב הדגמה ←</span>
+          </button>
+
+          <!-- Preset 4: Empty Custom -->
+          <button type="button" data-preset="empty_custom" class="preset-trigger group p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 hover:border-slate-400 dark:hover:border-slate-500 hover:shadow-md transition-all cursor-pointer text-right flex flex-col justify-between gap-2">
+            <div>
+              <div class="flex items-center justify-between gap-2">
+                <span class="text-sm sm:text-base font-extrabold text-slate-900 dark:text-white">מסלול ריק (התאמה אישית)</span>
+                <span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">חופשי</span>
+              </div>
+              <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
+                התחל מאפס והוסף בעצמך כל קורס, שעות שבועיות וציון לפי מערכת השעות האישית שלך.
+              </p>
+            </div>
+            <span class="text-xs font-bold text-slate-700 dark:text-slate-300">הוסף קורס ראשון ←</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- SMART ACTION PLAN ENGINE: "מה אני צריך לעשות כדי להגיע ליעד?"      -->
+    <!-- =================================================================== -->
+    <section id="advisor-section" aria-label="יועץ חכם להשגת היעד" class="rounded-3xl bg-white dark:bg-navy-900 border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+      <!-- Advisor Header Bar -->
+      <div class="px-4 sm:px-6 py-4 bg-gradient-to-l from-slate-50 via-ocean-50/50 to-white dark:from-slate-900 dark:via-ocean-950/30 dark:to-navy-900 border-b border-slate-200/80 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-2xl bg-ocean-600 text-white flex items-center justify-center shrink-0 shadow-sm">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+            </svg>
+          </div>
+          <div>
+            <h2 class="text-base sm:text-lg font-extrabold text-navy-900 dark:text-white">
+              מה אני צריך לעשות כדי להגיע ליעד?
+            </h2>
+            <p class="text-xs text-slate-500 dark:text-slate-400">
+              מנוע ייעוץ חכם המתעדכן בזמן אמת לפי הציונים, המשקלים ומועדי הב׳ שלך
+            </p>
+          </div>
+        </div>
+
+        <!-- Auto-Solve Button -->
+        <button id="btn-auto-solve" type="button" class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-2xl bg-gradient-to-l from-ocean-600 to-sky-500 hover:from-ocean-700 hover:to-sky-600 text-white text-xs sm:text-sm font-extrabold shadow-sm transition-all cursor-pointer active:scale-95 shrink-0">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+          </svg>
+          <span>בנה לי מסלול ריאלי ליעד</span>
+        </button>
+      </div>
+
+      <!-- Advisor Body -->
+      <div class="p-4 sm:p-6 space-y-5">
+        <!-- Block 1: Required Average Banner -->
+        <div id="advisor-required-banner" class="rounded-2xl p-4 sm:p-5 border transition-colors"></div>
+
+        <!-- Block 2: Highest-Impact Moed B Recommendations -->
+        <div id="advisor-moedb-wrapper" class="space-y-3">
+          <div class="flex items-center justify-between gap-2 flex-wrap">
+            <h3 class="text-sm sm:text-base font-extrabold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+              <span>המלצות מועד ב׳ בעלות ההשפעה הגבוהה ביותר</span>
+            </h3>
+            <span id="advisor-moedb-subtitle" class="text-xs text-slate-500 dark:text-slate-400">ממוין לפי התרומה המקסימלית לממוצע</span>
+          </div>
+          <div id="advisor-moedb-cards" class="grid grid-cols-1 md:grid-cols-3 gap-3"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- COURSES CRUD TOOLBAR & INTERACTIVE COURSE LIST                      -->
+    <!-- =================================================================== -->
+    <section aria-label="רשימת קורסים וסימולטור מועדי ב'" class="space-y-4">
+
+      <!-- Action & Filter Bar -->
+      <div class="bg-white dark:bg-navy-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-3.5 sm:p-4 shadow-xs space-y-3">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+          <!-- Add Course Button + Search -->
+          <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 flex-1">
+            <button id="btn-toggle-add-course" type="button" class="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-navy-900 dark:bg-ocean-600 hover:bg-navy-850 dark:hover:bg-ocean-500 text-white text-xs sm:text-sm font-extrabold transition-all cursor-pointer active:scale-95 shrink-0">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+              </svg>
+              <span>הוסף קורס חדש</span>
+            </button>
+
+            <div class="relative flex-1 max-w-md">
+              <svg class="w-4 h-4 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+              <input id="input-search-courses" type="search" placeholder="חיפוש קורס לפי שם..." class="w-full pr-9 pl-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-800 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-ocean-500" />
+            </div>
+          </div>
+
+          <!-- Utility Quick Actions -->
+          <div class="flex flex-wrap items-center gap-2">
+            <button id="btn-reset-moedb" type="button" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold transition-colors cursor-pointer">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+              <span>איפוס מועדי ב׳</span>
+            </button>
+
+            <button id="btn-copy-whatsapp" type="button" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 text-xs font-bold transition-colors cursor-pointer">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+              </svg>
+              <span>העתק סיכום לוואטסאפ</span>
+            </button>
+
+            <button id="btn-full-reset" type="button" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-rose-50 dark:bg-rose-950/40 hover:bg-rose-100 dark:hover:bg-rose-900/50 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800/70 text-xs font-bold transition-colors cursor-pointer">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+              <span>איפוס מלא</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Inline Add New Course Form (Expandable) -->
+        <form id="form-add-course" class="hidden pt-3 border-t border-slate-200 dark:border-slate-800 grid grid-cols-1 sm:grid-cols-12 gap-2.5 items-end">
+          <div class="sm:col-span-4">
+            <label for="new-course-name" class="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">שם הקורס</label>
+            <input id="new-course-name" type="text" required placeholder="למשל: תרמודינמיקה / פיזיקה" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-ocean-500" />
+          </div>
+          <div class="sm:col-span-3">
+            <label for="new-course-status" class="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">סטטוס</label>
+            <select id="new-course-status" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-ocean-500">
+              <option value="upcoming">טרם נבחנתי</option>
+              <option value="completed">נבחנתי (יש ציון)</option>
+              <option value="excluded">מוקפא / לא נכלל</option>
+            </select>
+          </div>
+          <div class="sm:col-span-2">
+            <label for="new-course-grade" class="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">ציון / יעד</label>
+            <input id="new-course-grade" type="number" min="0" max="100" value="90" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-sm text-center font-bold tabular-nums focus:outline-none focus:ring-2 focus:ring-ocean-500" />
+          </div>
+          <div class="sm:col-span-1">
+            <label for="new-course-weight" class="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">שעות/נ״ז</label>
+            <input id="new-course-weight" type="number" min="0.5" max="20" step="0.5" value="3" class="w-full px-2 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-sm text-center font-bold tabular-nums focus:outline-none focus:ring-2 focus:ring-ocean-500" />
+          </div>
+          <div class="sm:col-span-2 flex items-center gap-1.5">
+            <button type="submit" class="flex-1 py-2 px-3 rounded-xl bg-ocean-600 hover:bg-ocean-700 text-white text-sm font-extrabold transition-colors cursor-pointer">
+              שמור
+            </button>
+            <button id="btn-cancel-add-course" type="button" class="py-2 px-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 text-sm font-bold cursor-pointer">
+              ביטול
+            </button>
+          </div>
+        </form>
+
+        <!-- Filter Tabs -->
+        <div id="filter-tabs" class="flex items-center gap-1.5 overflow-x-auto pb-0.5 pt-1 border-t border-slate-100 dark:border-slate-800/80">
+          <button type="button" data-filter="all" class="filter-tab shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer"></button>
+          <button type="button" data-filter="completed" class="filter-tab shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer"></button>
+          <button type="button" data-filter="upcoming" class="filter-tab shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer"></button>
+          <button type="button" data-filter="below_threshold" class="filter-tab shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer"></button>
+          <button type="button" data-filter="excluded" class="filter-tab shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer"></button>
+        </div>
+      </div>
+
+      <!-- Courses Grid -->
+      <div id="courses-grid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3.5"></div>
+
+      <!-- Empty Filter State -->
+      <div id="courses-empty-filter" class="hidden rounded-2xl bg-white dark:bg-navy-900 border border-slate-200 dark:border-slate-800 p-8 text-center">
+        <p class="text-sm font-bold text-slate-600 dark:text-slate-300">לא נמצאו קורסים תואמים לסינון או לחיפוש הנוכחי.</p>
+        <button id="btn-clear-filters" type="button" class="mt-3 px-4 py-1.5 rounded-xl bg-ocean-100 dark:bg-ocean-900/50 text-ocean-800 dark:text-sky-300 text-xs font-bold cursor-pointer">
+          הצג את כל הקורסים
+        </button>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- LIVE INTERACTIVE SVG BAR CHART                                      -->
+    <!-- =================================================================== -->
+    <section id="chart-section" aria-label="גרף ציונים אינטראקטיבי" class="bg-white dark:bg-navy-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm p-4 sm:p-6">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-4">
+        <div>
+          <h2 class="text-base sm:text-lg font-extrabold text-navy-900 dark:text-white flex items-center gap-2">
+            <svg class="w-5 h-5 text-ocean-600 dark:text-sky-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+            </svg>
+            <span>גרף עמודות חי — תמונת מצב מול היעד האישי</span>
+          </h2>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+            עבור עם העכבר (או לחץ בנייד) על כל עמודה לפירוט מלא. קו היעד זז בזמן אמת לפי היעד שקבעת.
+          </p>
+        </div>
+
+        <!-- Chart Sort Controls -->
+        <div class="inline-flex items-center bg-slate-100 dark:bg-slate-800 p-1 rounded-xl text-xs font-bold self-start md:self-auto">
+          <button type="button" data-sort="default" class="chart-sort-btn px-2.5 py-1 rounded-lg transition-all cursor-pointer">לפי סדר</button>
+          <button type="button" data-sort="desc" class="chart-sort-btn px-2.5 py-1 rounded-lg transition-all cursor-pointer">מגבוה לנמוך</button>
+          <button type="button" data-sort="asc" class="chart-sort-btn px-2.5 py-1 rounded-lg transition-all cursor-pointer">מנמוך לגבוה</button>
+        </div>
+      </div>
+
+      <!-- Legend -->
+      <div class="flex flex-wrap items-center gap-x-4 gap-y-2 mb-4 text-[11px] sm:text-xs font-semibold text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-800/60 px-3.5 py-2.5 rounded-2xl border border-slate-100 dark:border-slate-800">
+        <span class="inline-flex items-center gap-1.5">
+          <span class="w-3 h-3 rounded-sm bg-navy-900 dark:bg-indigo-500 inline-block"></span>
+          ציון רשמי (נבחנתי)
+        </span>
+        <span class="inline-flex items-center gap-1.5">
+          <span class="w-3 h-3 rounded-sm bg-emerald-500 inline-block border border-emerald-300"></span>
+          תוספת שיפור מועד ב׳
+        </span>
+        <span class="inline-flex items-center gap-1.5">
+          <span class="w-3 h-3 rounded-sm bg-sky-400 dark:bg-sky-500 inline-block"></span>
+          ציון יעד (טרם נבחנתי)
+        </span>
+        <span class="inline-flex items-center gap-1.5">
+          <span class="w-3 h-3 rounded-sm bg-rose-500 inline-block"></span>
+          מתחת לרף מועד ב׳
+        </span>
+        <span class="inline-flex items-center gap-1.5 sm:mr-auto">
+          <span class="w-5 border-t-2 border-dashed border-amber-500 inline-block"></span>
+          <span id="legend-target-label">יעד אישי (90)</span>
+        </span>
+      </div>
+
+      <!-- Interactive Tooltip Container + Responsive SVG -->
+      <div class="relative">
+        <div id="chart-tooltip" class="hidden pointer-events-none absolute z-30 bg-navy-900 text-white rounded-xl px-3 py-2 text-xs shadow-xl border border-sky-400/30 max-w-[220px]"></div>
+        <div id="svg-chart-wrapper" class="w-full overflow-x-auto pb-2"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 text-center text-xs text-slate-400 dark:text-slate-500">
+    מחשבון ויועץ ציונים לכלל תלמידי מכללת SeaTech (קציני ים עכו) • המידע שלך פרטי ומשויך למשתמש שלך בלבד
+  </footer>
+
+  <!-- ===================================================================== -->
+  <!-- MODAL 1: TRACK PRESETS MODAL                                          -->
+  <!-- ===================================================================== -->
+  <div id="modal-presets" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-navy-950/70 backdrop-blur-xs">
+    <div class="bg-white dark:bg-navy-900 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-5 sm:p-6">
+      <div class="flex items-center justify-between gap-2 pb-3 border-b border-slate-200 dark:border-slate-800">
+        <div>
+          <h3 class="text-lg font-extrabold text-navy-900 dark:text-white">בחירת תבנית מסלול — מכללת SeaTech</h3>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">טעינת תבנית תחליף את רשימת הקורסים הנוכחית שלך</p>
+        </div>
+        <button type="button" data-close-modal="modal-presets" class="p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 cursor-pointer">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
+        <button type="button" data-preset="mech_13" class="preset-trigger p-4 rounded-2xl border border-slate-200 dark:border-slate-700 hover:border-ocean-500 bg-slate-50/70 dark:bg-slate-800/60 hover:bg-ocean-50/60 dark:hover:bg-ocean-950/40 text-right transition-all cursor-pointer">
+          <div class="flex items-center justify-between gap-2">
+            <span class="font-extrabold text-sm text-navy-900 dark:text-white">הנדסאי מכונות — י״ג</span>
+            <span class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-ocean-100 dark:bg-ocean-900 text-ocean-800 dark:text-sky-200">16 קורסים</span>
+          </div>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-1.5">כל 16 קורסי המגמה במצב "טרם נבחנתי" להזנת הציונים האישיים שלך.</p>
+        </button>
+
+        <button type="button" data-preset="elec_13" class="preset-trigger p-4 rounded-2xl border border-slate-200 dark:border-slate-700 hover:border-ocean-500 bg-slate-50/70 dark:bg-slate-800/60 hover:bg-ocean-50/60 dark:hover:bg-ocean-950/40 text-right transition-all cursor-pointer">
+          <div class="flex items-center justify-between gap-2">
+            <span class="font-extrabold text-sm text-navy-900 dark:text-white">הנדסאי אלקטרוניקה / חשמל</span>
+            <span class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-900 text-indigo-800 dark:text-indigo-200">10 קורסים</span>
+          </div>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-1.5">קורסי הליבה של אלקטרוניקה וחשמל כולל שעות שבועיות מומלצות.</p>
+        </button>
+
+        <button type="button" data-preset="demo_sample" class="preset-trigger p-4 rounded-2xl border border-emerald-200 dark:border-emerald-800 hover:border-emerald-500 bg-emerald-50/60 dark:bg-emerald-950/30 text-right transition-all cursor-pointer">
+          <div class="flex items-center justify-between gap-2">
+            <span class="font-extrabold text-sm text-emerald-950 dark:text-emerald-200">טען דוגמה להמחשה</span>
+            <span class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-emerald-200/80 dark:bg-emerald-900 text-emerald-900 dark:text-emerald-200">דמו מלא</span>
+          </div>
+          <p class="text-xs text-emerald-800/80 dark:text-emerald-300/80 mt-1.5">נתוני דוגמה להתנסות מהירה בסימולטור מועדי ב׳, ביועץ ובגרף.</p>
+        </button>
+
+        <button type="button" data-preset="empty_custom" class="preset-trigger p-4 rounded-2xl border border-slate-200 dark:border-slate-700 hover:border-slate-400 bg-slate-50/70 dark:bg-slate-800/60 text-right transition-all cursor-pointer">
+          <div class="flex items-center justify-between gap-2">
+            <span class="font-extrabold text-sm text-slate-900 dark:text-white">מסלול ריק (התאמה אישית)</span>
+            <span class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200">0 קורסים</span>
+          </div>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-1.5">בנה לעצמך רשימת קורסים מאפס עם כל שם, שעות וסטטוס.</p>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- MODAL 2: STUDENT PROFILE (NAME & CLASS/TRACK)                         -->
+  <!-- ===================================================================== -->
+  <div id="modal-profile" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-navy-950/70 backdrop-blur-xs">
+    <form id="form-profile" class="bg-white dark:bg-navy-900 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-2xl max-w-md w-full p-5 sm:p-6 space-y-4">
+      <div class="flex items-center justify-between pb-2 border-b border-slate-200 dark:border-slate-800">
+        <h3 class="text-lg font-extrabold text-navy-900 dark:text-white">פרטי התלמיד (אופציונלי)</h3>
+        <button type="button" data-close-modal="modal-profile" class="p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 cursor-pointer">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      <div>
+        <label for="profile-name-input" class="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">שם פרטי / כינוי</label>
+        <input id="profile-name-input" type="text" placeholder="למשל: דניאל" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-ocean-500" />
+      </div>
+      <div>
+        <label for="profile-track-input" class="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">כיתה / מגמה</label>
+        <input id="profile-track-input" type="text" placeholder="למשל: י״ג מכונות / י״ד אלקטרוניקה" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-ocean-500" />
+      </div>
+      <div class="flex items-center justify-end gap-2 pt-2">
+        <button type="button" data-close-modal="modal-profile" class="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-sm font-bold cursor-pointer">ביטול</button>
+        <button type="submit" class="px-5 py-2 rounded-xl bg-ocean-600 hover:bg-ocean-700 text-white text-sm font-extrabold cursor-pointer">שמור פרטים</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- MODAL 3: CONFIRM FULL RESET (No native confirm())                     -->
+  <!-- ===================================================================== -->
+  <div id="modal-confirm-reset" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-navy-950/70 backdrop-blur-xs">
+    <div class="bg-white dark:bg-navy-900 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-2xl max-w-md w-full p-5 sm:p-6 space-y-4">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-2xl bg-rose-100 dark:bg-rose-950 text-rose-600 dark:text-rose-400 flex items-center justify-center shrink-0">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+        </div>
+        <div>
+          <h3 class="text-base font-extrabold text-navy-900 dark:text-white">איפוס מלא של כל הנתונים?</h3>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">פעולה זו תמחק את רשימת הקורסים הנוכחית ותחזיר אותך למסך בחירת המסלול.</p>
+        </div>
+      </div>
+      <div class="flex items-center justify-end gap-2 pt-2">
+        <button type="button" data-close-modal="modal-confirm-reset" class="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-sm font-bold cursor-pointer">ביטול</button>
+        <button id="btn-confirm-full-reset" type="button" class="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-sm font-extrabold cursor-pointer">כן, אפס הכל</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- APPLICATION LOGIC (ES Module with Firebase Auth + Firestore)          -->
+  <!-- ===================================================================== -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import {
+      getAuth,
+      signInAnonymously,
+      signInWithCustomToken,
+      onAuthStateChanged,
+      GoogleAuthProvider,
+      linkWithPopup,
+      signInWithPopup,
+      signOut
+    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import {
+      getFirestore,
+      doc,
+      setDoc,
+      onSnapshot
+    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    /**
+     * =======================================================================
+     * 1. STATE & PRESETS DEFINITIONS (Zero Personal Data Hardcoded)
+     * =======================================================================
+     */
+    const uidGen = () => 'c_' + Math.random().toString(36).slice(2, 9) + Date.now().toString(36).slice(-3);
+
+    function createDefaultState() {
+      return {
+        studentName: '',
+        studentTrack: '',
+        targetGPA: 90,
+        moedBThreshold: 85,
+        isWeighted: false,
+        theme: 'light',
+        activeFilter: 'all',
+        searchQuery: '',
+        chartSort: 'default',
+        stickyCompact: false,
+        courses: [] // Brand-new accounts start clean on the Onboarding screen
+      };
+    }
+
+    /**
+     * Official SeaTech College Track Presets
+     */
+    const TRACK_PRESETS = {
+      mech_13: {
+        label: 'הנדסאי מכונות — י״ג',
+        courses: [
+          { name: 'לוגיקה', weight: 3 },
+          { name: 'ניהול הייצור', weight: 3 },
+          { name: 'מכונאות כללית', weight: 4 },
+          { name: 'סיב"ם', weight: 3 },
+          { name: 'הידראוליקה', weight: 3 },
+          { name: 'תרמודינמיקה', weight: 4 },
+          { name: 'חומרים ועיבודם', weight: 3 },
+          { name: 'אנגלית', weight: 3 },
+          { name: 'חוזק חומרים', weight: 4 },
+          { name: 'אוטומציה', weight: 4 },
+          { name: 'מתמטיקה', weight: 4 },
+          { name: 'שרטוט ידני', weight: 3 },
+          { name: 'מכניקה טכנית', weight: 4 },
+          { name: 'מכונאות דיזל', weight: 4 },
+          { name: 'חשמל', weight: 4 },
+          { name: 'מנהיגות ו-AI', weight: 2 }
+        ].map((item) => ({
+          id: uidGen(),
+          name: item.name,
+          weight: item.weight,
+          status: 'upcoming', // Every student enters their own grades cleanly
+          officialGrade: 85,
+          moedBEnabled: false,
+          moedBGrade: 95,
+          targetGrade: 90
+        }))
+      },
+      elec_13: {
+        label: 'הנדסאי אלקטרוניקה / חשמל',
+        courses: [
+          { name: 'מתמטיקה', weight: 4 },
+          { name: 'אנגלית', weight: 3 },
+          { name: 'תורת החשמל', weight: 5 },
+          { name: 'אלקטרוניקה תקבילית', weight: 4 },
+          { name: 'מערכות ספרתיות', weight: 4 },
+          { name: 'שפת C', weight: 4 },
+          { name: 'מיקרומעבדים', weight: 4 },
+          { name: 'פיזיקה', weight: 4 },
+          { name: 'בקרה', weight: 3 },
+          { name: 'מעבדת אלקטרוניקה', weight: 3 }
+        ].map((item) => ({
+          id: uidGen(),
+          name: item.name,
+          weight: item.weight,
+          status: 'upcoming',
+          officialGrade: 85,
+          moedBEnabled: false,
+          moedBGrade: 95,
+          targetGrade: 90
+        }))
+      },
+      demo_sample: {
+        label: 'דוגמה להמחשה (הנדסאי מכונות)',
+        targetGPA: 92,
+        moedBThreshold: 85,
+        courses: [
+          { name: 'מכניקה טכנית', weight: 4, status: 'completed', officialGrade: 96, moedBEnabled: false, moedBGrade: 100, targetGrade: 96 },
+          { name: 'חוזק חומרים', weight: 4, status: 'completed', officialGrade: 92, moedBEnabled: false, moedBGrade: 98, targetGrade: 92 },
+          { name: 'תרמודינמיקה', weight: 4, status: 'completed', officialGrade: 78, moedBEnabled: false, moedBGrade: 94, targetGrade: 90 },
+          { name: 'ניהול הייצור', weight: 3, status: 'completed', officialGrade: 82, moedBEnabled: false, moedBGrade: 96, targetGrade: 90 },
+          { name: 'סיב"ם', weight: 3, status: 'completed', officialGrade: 98, moedBEnabled: false, moedBGrade: 100, targetGrade: 98 },
+          { name: 'לוגיקה', weight: 3, status: 'completed', officialGrade: 89, moedBEnabled: false, moedBGrade: 95, targetGrade: 90 },
+          { name: 'אוטומציה', weight: 4, status: 'upcoming', officialGrade: 85, moedBEnabled: false, moedBGrade: 95, targetGrade: 91 },
+          { name: 'חשמל', weight: 4, status: 'upcoming', officialGrade: 85, moedBEnabled: false, moedBGrade: 95, targetGrade: 90 },
+          { name: 'חומרים ועיבודם', weight: 3, status: 'upcoming', officialGrade: 85, moedBEnabled: false, moedBGrade: 95, targetGrade: 95 },
+          { name: 'מכונאות דיזל', weight: 4, status: 'upcoming', officialGrade: 85, moedBEnabled: false, moedBGrade: 95, targetGrade: 93 },
+          { name: 'אנגלית', weight: 3, status: 'upcoming', officialGrade: 85, moedBEnabled: false, moedBGrade: 95, targetGrade: 96 },
+          { name: 'מתמטיקה', weight: 4, status: 'excluded', officialGrade: 85, moedBEnabled: false, moedBGrade: 95, targetGrade: 90 }
+        ].map((c) => ({ id: uidGen(), ...c }))
+      }
+    };
+
+    let state = createDefaultState();
+
+    // Firebase runtime handles
+    let db = null;
+    let auth = null;
+    let currentUser = null;
+    let unsubscribeProfile = null;
+    let saveTimer = null;
+    let isRemoteSyncing = false;
+    const appId = typeof __app_id !== 'undefined' ? __app_id : 'seatech-gpa-advisor';
+
+    /**
+     * =======================================================================
+     * 2. NUMERIC HELPERS & CORE GPA / ADVISOR CALCULATION ENGINE
+     * =======================================================================
+     */
+    const clampGrade = (v) => {
+      const n = Number(v);
+      if (Number.isNaN(n)) return 0;
+      return Math.max(0, Math.min(100, Math.round(n)));
+    };
+
+    const clampTarget = (v) => {
+      const n = Number(v);
+      if (Number.isNaN(n)) return 90;
+      return Math.max(55, Math.min(100, Math.round(n * 2) / 2));
+    };
+
+    const clampWeight = (v) => {
+      const n = Number(v);
+      if (Number.isNaN(n) || n <= 0) return 1;
+      return Math.max(0.5, Math.min(20, Math.round(n * 2) / 2));
+    };
+
+    function getWeight(course) {
+      return state.isWeighted ? clampWeight(course.weight) : 1;
+    }
+
+    function getSimulatedGrade(course) {
+      if (course.status === 'completed') {
+        return course.moedBEnabled ? clampGrade(course.moedBGrade) : clampGrade(course.officialGrade);
+      }
+      return clampGrade(course.targetGrade);
+    }
+
+    /**
+     * Computes all dashboard KPIs, Required Remaining GPA, Point Budget, and Moed B Recommendations.
+     */
+    function computeMetrics() {
+      const completed = state.courses.filter((c) => c.status === 'completed');
+      const upcoming = state.courses.filter((c) => c.status === 'upcoming');
+      const excluded = state.courses.filter((c) => c.status === 'excluded');
+      const active = [...completed, ...upcoming];
+
+      let wCompleted = 0;
+      let sumOfficial = 0;
+      let sumCompletedSim = 0;
+      let activeMoedBCount = 0;
+
+      completed.forEach((c) => {
+        const w = getWeight(c);
+        wCompleted += w;
+        sumOfficial += clampGrade(c.officialGrade) * w;
+        sumCompletedSim += getSimulatedGrade(c) * w;
+        if (c.moedBEnabled) activeMoedBCount++;
+      });
+
+      let wUpcoming = 0;
+      let sumUpcoming = 0;
+      upcoming.forEach((c) => {
+        const w = getWeight(c);
+        wUpcoming += w;
+        sumUpcoming += clampGrade(c.targetGrade) * w;
+      });
+
+      const wTotal = wCompleted + wUpcoming;
+      const officialGPA = wCompleted > 0 ? sumOfficial / wCompleted : null;
+      const simulatedGPA = wTotal > 0 ? (sumCompletedSim + sumUpcoming) / wTotal : null;
+
+      // Max possible ceiling if getting 100 in all upcoming exams
+      const maxGPACurrent = wTotal > 0 ? (sumCompletedSim + 100 * wUpcoming) / wTotal : null;
+      const maxGPANoMoedB = wTotal > 0 ? (sumOfficial + 100 * wUpcoming) / wTotal : null;
+
+      // Required average in remaining upcoming courses to reach Target GPA
+      const targetTotalSum = state.targetGPA * wTotal;
+      const requiredUpcomingSum = targetTotalSum - sumCompletedSim;
+      const requiredUpcomingAvg = wUpcoming > 0 ? requiredUpcomingSum / wUpcoming : null;
+
+      // Point budget below 100 across remaining upcoming courses
+      // (How many total grade points below 100 can still be lost across remaining courses)
+      const maxUpcomingSum = 100 * wUpcoming;
+      const pointsBudgetBelow100 = wUpcoming > 0 ? maxUpcomingSum - requiredUpcomingSum : null;
+
+      // Points surplus/deficit of current simulation vs Target GPA
+      const simDiffFromTargetSum = wTotal > 0 ? (sumCompletedSim + sumUpcoming) - targetTotalSum : 0;
+
+      // Highest-Impact Moed B Recommendations
+      const recThreshold = Math.max(state.targetGPA, state.moedBThreshold);
+      const moedBRecommendations = completed
+        .filter((c) => c.officialGrade < 100 && (c.officialGrade < recThreshold || (requiredUpcomingAvg !== null && requiredUpcomingAvg > 95)))
+        .map((c) => {
+          const w = getWeight(c);
+          const maxGainGPA = wTotal > 0 ? ((100 - c.officialGrade) * w) / wTotal : 0;
+          // Suggest an achievable yet impactful Moed B score
+          const suggestedGrade = Math.min(100, Math.max(Math.ceil(state.targetGPA), c.officialGrade + 12, 92));
+          const suggestedLiftGPA = wTotal > 0 ? ((suggestedGrade - c.officialGrade) * w) / wTotal : 0;
+
+          // What would the required remaining avg become if this single Moed B were enabled at suggestedGrade?
+          let newRequiredAvg = null;
+          if (wUpcoming > 0) {
+            const currentContrib = getSimulatedGrade(c) * w;
+            const newContrib = suggestedGrade * w;
+            const newSumCompletedSim = sumCompletedSim - currentContrib + newContrib;
+            newRequiredAvg = (targetTotalSum - newSumCompletedSim) / wUpcoming;
+          }
+
+          return {
+            course: c,
+            weight: w,
+            maxGainGPA,
+            suggestedGrade,
+            suggestedLiftGPA,
+            newRequiredAvg
+          };
+        })
+        .sort((a, b) => b.maxGainGPA - a.maxGainGPA)
+        .slice(0, 3);
+
+      // Count below threshold (for filter badge)
+      const belowThresholdCount = completed.filter((c) => getSimulatedGrade(c) < state.moedBThreshold).length;
+
+      return {
+        completed,
+        upcoming,
+        excluded,
+        active,
+        wCompleted,
+        wUpcoming,
+        wTotal,
+        officialGPA,
+        simulatedGPA,
+        maxGPACurrent,
+        maxGPANoMoedB,
+        activeMoedBCount,
+        requiredUpcomingAvg,
+        pointsBudgetBelow100,
+        simDiffFromTargetSum,
+        moedBRecommendations,
+        belowThresholdCount
+      };
+    }
+
+    /**
+     * =======================================================================
+     * 3. FIREBASE AUTHENTICATION & FIRESTORE PERSISTENCE
+     * =======================================================================
+     */
+    function setCloudStatus(mode, text) {
+      const dot = document.getElementById('cloud-status-dot');
+      const label = document.getElementById('cloud-status-text');
+      if (!dot || !label) return;
+      label.textContent = text;
+      const colorMap = {
+        saved: 'bg-emerald-400',
+        saving: 'bg-amber-400 animate-pulse',
+        local: 'bg-sky-400',
+        error: 'bg-rose-400'
+      };
+      dot.className = `w-1.5 h-1.5 rounded-full ${colorMap[mode] || colorMap.local}`;
+    }
+
+    function updateGoogleAuthButton(user) {
+      const btn = document.getElementById('btn-google-auth');
+      const textEl = document.getElementById('google-auth-text');
+      if (!btn || !textEl) return;
+
+      if (user && !user.isAnonymous) {
+        const name = user.displayName || user.email || 'מחובר עם Google';
+        textEl.textContent = `${name} • התנתק`;
+        btn.classList.remove('bg-white', 'text-slate-900');
+        btn.classList.add('bg-emerald-500/20', 'text-emerald-100', 'border-emerald-400/40', 'hover:bg-emerald-500/30');
+      } else {
+        textEl.textContent = 'התחבר עם Google לשמירה בין מכשירים';
+        btn.classList.add('bg-white', 'text-slate-900');
+        btn.classList.remove('bg-emerald-500/20', 'text-emerald-100', 'border-emerald-400/40', 'hover:bg-emerald-500/30');
+      }
+    }
+
+    function getUserProfileDocRef(userId) {
+      // STRICT RULE 1: /artifacts/{appId}/users/{userId}/{collection}/{doc}
+      return doc(db, 'artifacts', appId, 'users', userId, 'seatechGpa', 'profile');
+    }
+
+    function scheduleCloudSave() {
+      if (!db || !currentUser || isRemoteSyncing) return;
+      setCloudStatus('saving', 'שומר בענן...');
+      if (saveTimer) clearTimeout(saveTimer);
+      saveTimer = setTimeout(async () => {
+        if (!db || !currentUser) return;
+        try {
+          const payload = {
+            studentName: state.studentName,
+            studentTrack: state.studentTrack,
+            targetGPA: state.targetGPA,
+            moedBThreshold: state.moedBThreshold,
+            isWeighted: state.isWeighted,
+            theme: state.theme,
+            courses: state.courses,
+            updatedAt: Date.now()
+          };
+          await setDoc(getUserProfileDocRef(currentUser.uid), payload, { merge: true });
+          setCloudStatus('saved', 'נשמר בענן ✓');
+        } catch (err) {
+          console.error('Firestore save error:', err);
+          setCloudStatus('error', 'שגיאת סנכרון');
+        }
+      }, 450);
+    }
+
+    function subscribeToUserProfile(user) {
+      if (unsubscribeProfile) {
+        unsubscribeProfile();
+        unsubscribeProfile = null;
+      }
+      if (!db || !user) return;
+
+      const docRef = getUserProfileDocRef(user.uid);
+      // Mandatory error callback on onSnapshot
+      unsubscribeProfile = onSnapshot(
+        docRef,
+        (snap) => {
+          if (snap.exists()) {
+            const data = snap.data();
+            isRemoteSyncing = true;
+            state.studentName = typeof data.studentName === 'string' ? data.studentName : state.studentName;
+            state.studentTrack = typeof data.studentTrack === 'string' ? data.studentTrack : state.studentTrack;
+            state.targetGPA = data.targetGPA !== undefined ? clampTarget(data.targetGPA) : state.targetGPA;
+            state.moedBThreshold = data.moedBThreshold !== undefined ? clampGrade(data.moedBThreshold) : state.moedBThreshold;
+            state.isWeighted = typeof data.isWeighted === 'boolean' ? data.isWeighted : state.isWeighted;
+            state.theme = data.theme === 'dark' ? 'dark' : 'light';
+            if (Array.isArray(data.courses)) {
+              state.courses = data.courses.map((c) => ({
+                id: c.id || uidGen(),
+                name: String(c.name || 'קורס ללא שם'),
+                weight: clampWeight(c.weight ?? 3),
+                status: ['completed', 'upcoming', 'excluded'].includes(c.status) ? c.status : 'upcoming',
+                officialGrade: clampGrade(c.officialGrade ?? 85),
+                moedBEnabled: Boolean(c.moedBEnabled),
+                moedBGrade: clampGrade(c.moedBGrade ?? 95),
+                targetGrade: clampGrade(c.targetGrade ?? 90)
+              }));
+            }
+            applyTheme(state.theme);
+            renderAll(false);
+            isRemoteSyncing = false;
+            setCloudStatus('saved', 'נשמר בענן ✓');
+          } else {
+            // Brand new user doc: if already has Google displayName, prefill politely
+            if (!user.isAnonymous && user.displayName && !state.studentName) {
+              state.studentName = user.displayName;
+              renderHeaderProfile();
+            }
+            setCloudStatus('saved', 'מחובר לענן ✓');
+          }
+        },
+        (err) => {
+          console.error('Firestore snapshot error:', err);
+          setCloudStatus('error', 'מצב מקומי (שגיאת הרשאה)');
+        }
+      );
+    }
+
+    async function initFirebase() {
+      try {
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
+        if (!firebaseConfig || !firebaseConfig.apiKey) {
+          setCloudStatus('local', 'מצב פעיל (סשן נוכחי)');
+          return;
+        }
+
+        const app = initializeApp(firebaseConfig);
+        db = getFirestore(app);
+        auth = getAuth(app);
+
+        // RULE 3: Authenticate FIRST using custom token if provided, else anonymously
+        const initialToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+        if (initialToken) {
+          await signInWithCustomToken(auth, initialToken);
+        } else {
+          await signInAnonymously(auth);
+        }
+
+        onAuthStateChanged(auth, (user) => {
+          currentUser = user;
+          updateGoogleAuthButton(user);
+          if (user) {
+            subscribeToUserProfile(user);
+          } else {
+            if (unsubscribeProfile) unsubscribeProfile();
+            setCloudStatus('local', 'לא מחובר');
+          }
+        });
+      } catch (err) {
+        console.warn('Firebase init fallback:', err);
+        setCloudStatus('local', 'מצב פעיל (ללא ענן)');
+      }
+    }
+
+    async function handleGoogleAuthClick() {
+      if (!auth) {
+        showToast('חיבור Google זמין בסביבת ענן פעילה', 'amber');
+        return;
+      }
+
+      if (currentUser && !currentUser.isAnonymous) {
+        try {
+          await signOut(auth);
+          await signInAnonymously(auth);
+          showToast('התנתקת מחשבון Google — חזרת למצב אורח', 'ocean');
+        } catch (err) {
+          console.error('Sign out error:', err);
+          showToast('לא ניתן היה להתנתק כרגע', 'rose');
+        }
+        return;
+      }
+
+      const provider = new GoogleAuthProvider();
+      try {
+        if (currentUser && currentUser.isAnonymous) {
+          try {
+            await linkWithPopup(currentUser, provider);
+            showToast('החשבון חובר ל-Google! הציונים שלך מסונכרנים בענן', 'emerald');
+            scheduleCloudSave();
+            return;
+          } catch (linkErr) {
+            if (linkErr.code === 'auth/credential-already-in-use' || linkErr.code === 'auth/email-already-in-use') {
+              await signInWithPopup(auth, provider);
+              showToast('התחברת לחשבון Google הקיים שלך — הציונים נטענו!', 'emerald');
+              return;
+            }
+            throw linkErr;
+          }
+        } else {
+          await signInWithPopup(auth, provider);
+          showToast('התחברת בהצלחה עם Google!', 'emerald');
+        }
+      } catch (err) {
+        console.warn('Google auth error:', err);
+        if (err.code === 'auth/popup-closed-by-user') {
+          showToast('חלון ההתחברות נסגר לפני השלמה', 'amber');
+        } else {
+          showToast('התחברות Google חסומה בדפדפן/חלון זה — הנתונים ממשיכים להישמר בענן האנונימי שלך', 'amber');
+        }
+      }
+    }
+
+    /**
+     * =======================================================================
+     * 4. UI UTILITIES: TOASTS, MODALS, THEME, CLIPBOARD
+     * =======================================================================
+     */
+    function showToast(message, tone = 'ocean') {
+      const container = document.getElementById('toast-container');
+      if (!container) return;
+
+      const styles = {
+        ocean: 'bg-navy-900 text-white border-sky-500/40',
+        emerald: 'bg-emerald-900 text-white border-emerald-400/40',
+        amber: 'bg-amber-900 text-white border-amber-400/40',
+        rose: 'bg-rose-900 text-white border-rose-400/40'
+      };
+
+      const dotStyles = {
+        ocean: 'bg-sky-400',
+        emerald: 'bg-emerald-400',
+        amber: 'bg-amber-400',
+        rose: 'bg-rose-400'
+      };
+
+      const toast = document.createElement('div');
+      toast.className = `pointer-events-auto flex items-center gap-2.5 px-4 py-2.5 rounded-2xl border shadow-xl text-xs sm:text-sm font-semibold transition-all duration-300 opacity-0 translate-y-2 ${styles[tone] || styles.ocean}`;
+      toast.innerHTML = `<span class="w-2 h-2 rounded-full shrink-0 ${dotStyles[tone] || dotStyles.ocean}"></span><span>${escapeHTML(message)}</span>`;
+      container.appendChild(toast);
+
+      requestAnimationFrame(() => toast.classList.remove('opacity-0', 'translate-y-2'));
+      setTimeout(() => {
+        toast.classList.add('opacity-0', 'translate-y-2');
+        setTimeout(() => toast.remove(), 300);
+      }, 3000);
+    }
+
+    function escapeHTML(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function openModal(id) {
+      const el = document.getElementById(id);
+      if (el) el.classList.remove('hidden');
+    }
+
+    function closeModal(id) {
+      const el = document.getElementById(id);
+      if (el) el.classList.add('hidden');
+    }
+
+    function applyTheme(theme) {
+      const root = document.documentElement;
+      const isDark = theme === 'dark';
+      root.classList.toggle('dark', isDark);
+      document.querySelectorAll('.theme-icon-sun').forEach((el) => el.classList.toggle('hidden', !isDark));
+      document.querySelectorAll('.theme-icon-moon').forEach((el) => el.classList.toggle('hidden', isDark));
+    }
+
+    function copyTextFallback(text) {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.setAttribute('readonly', '');
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      let success = false;
+      try {
+        success = document.execCommand('copy');
+      } catch (e) {
+        success = false;
+      }
+      document.body.removeChild(ta);
+      return success;
+    }
+
+    /**
+     * =======================================================================
+     * 5. RENDERING FUNCTIONS
+     * =======================================================================
+     */
+    function renderHeaderProfile() {
+      const labelEl = document.getElementById('header-student-label');
+      if (!labelEl) return;
+      if (state.studentName && state.studentTrack) {
+        labelEl.textContent = `${state.studentName} • ${state.studentTrack}`;
+      } else if (state.studentName) {
+        labelEl.textContent = state.studentName;
+      } else if (state.studentTrack) {
+        labelEl.textContent = state.studentTrack;
+      } else {
+        labelEl.textContent = 'הגדר שם וכיתה (אופציונלי)';
+      }
+    }
+
+    function getGradePillClasses(grade) {
+      if (grade >= state.targetGPA) {
+        return 'bg-emerald-100 dark:bg-emerald-950/70 text-emerald-900 dark:text-emerald-200 border-emerald-300 dark:border-emerald-700';
+      }
+      if (grade >= state.moedBThreshold) {
+        return 'bg-ocean-100 dark:bg-ocean-950/70 text-ocean-900 dark:text-sky-200 border-ocean-300 dark:border-ocean-700';
+      }
+      return 'bg-rose-100 dark:bg-rose-950/70 text-rose-900 dark:text-rose-200 border-rose-300 dark:border-rose-700';
+    }
+
+    function renderDashboard(m) {
+      // Active courses count
+      document.getElementById('dash-active-badge').textContent = `${m.active.length} קורסים פעילים`;
+
+      // Mode toggle styles
+      const btnSimple = document.getElementById('btn-mode-simple');
+      const btnWeighted = document.getElementById('btn-mode-weighted');
+      if (state.isWeighted) {
+        btnWeighted.className = 'px-2.5 sm:px-3 py-1 rounded-lg transition-all cursor-pointer bg-ocean-600 text-white shadow-xs';
+        btnSimple.className = 'px-2.5 sm:px-3 py-1 rounded-lg transition-all cursor-pointer text-slate-600 dark:text-slate-300 hover:text-slate-900';
+      } else {
+        btnSimple.className = 'px-2.5 sm:px-3 py-1 rounded-lg transition-all cursor-pointer bg-ocean-600 text-white shadow-xs';
+        btnWeighted.className = 'px-2.5 sm:px-3 py-1 rounded-lg transition-all cursor-pointer text-slate-600 dark:text-slate-300 hover:text-slate-900';
+      }
+
+      // Sticky mobile compact state
+      const kpiGrid = document.getElementById('kpi-grid');
+      const compactBtn = document.getElementById('btn-toggle-sticky-compact');
+      if (state.stickyCompact) {
+        kpiGrid.classList.add('hidden', 'sm:grid');
+        compactBtn.textContent = 'הרחב מדדים';
+      } else {
+        kpiGrid.classList.remove('hidden');
+        compactBtn.textContent = 'צמצם';
+      }
+
+      // KPI 1: Official GPA
+      const offEl = document.getElementById('kpi-official-gpa');
+      const offSubEl = document.getElementById('kpi-official-sub');
+      if (m.officialGPA !== null) {
+        offEl.textContent = m.officialGPA.toFixed(2);
+        offSubEl.textContent = `מבוסס על ${m.completed.length} קורסים שנבחנו`;
+      } else {
+        offEl.textContent = '—';
+        offSubEl.textContent = 'טרם הוזנו ציונים רשמיים';
+      }
+
+      // KPI 2: Simulated Final GPA
+      const simEl = document.getElementById('kpi-sim-gpa');
+      const simBadge = document.getElementById('kpi-sim-badge');
+      const simDelta = document.getElementById('kpi-sim-delta');
+      const simVsTarget = document.getElementById('kpi-sim-vs-target');
+
+      if (m.simulatedGPA !== null) {
+        simEl.textContent = m.simulatedGPA.toFixed(2);
+
+        // Delta vs Official
+        if (m.officialGPA !== null) {
+          const diff = m.simulatedGPA - m.officialGPA;
+          if (Math.abs(diff) < 0.005) {
+            simDelta.textContent = 'ללא שינוי מהרשמי';
+            simDelta.className = 'text-[11px] font-semibold text-slate-500 dark:text-slate-400';
+          } else if (diff > 0) {
+            simDelta.textContent = `+${diff.toFixed(2)} מהרשמי`;
+            simDelta.className = 'text-[11px] font-extrabold text-emerald-600 dark:text-emerald-400';
+          } else {
+            simDelta.textContent = `${diff.toFixed(2)} מהרשמי`;
+            simDelta.className = 'text-[11px] font-extrabold text-rose-600 dark:text-rose-400';
+          }
+        } else {
+          simDelta.textContent = '';
+        }
+
+        // Badge & Delta vs Target
+        const diffTarget = m.simulatedGPA - state.targetGPA;
+        if (diffTarget >= -0.004) {
+          simBadge.textContent = 'עומד ביעד ✓';
+          simBadge.className = 'inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-100 dark:bg-emerald-900/70 text-emerald-800 dark:text-emerald-200';
+          simVsTarget.textContent =
+            diffTarget > 0.04
+              ? `מעל היעד ב-+${diffTarget.toFixed(2)} נק׳ ממוצע`
+              : `בול על יעד ${state.targetGPA}!`;
+          simVsTarget.className = 'mt-1.5 text-[11px] font-bold text-emerald-700 dark:text-emerald-300 truncate';
+        } else if (diffTarget >= -2) {
+          simBadge.textContent = 'קרוב ליעד';
+          simBadge.className = 'inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-amber-100 dark:bg-amber-900/70 text-amber-900 dark:text-amber-200';
+          simVsTarget.textContent = `חסרות ${Math.abs(diffTarget).toFixed(2)} נק׳ ממוצע ליעד ${state.targetGPA}`;
+          simVsTarget.className = 'mt-1.5 text-[11px] font-bold text-amber-700 dark:text-amber-300 truncate';
+        } else {
+          simBadge.textContent = 'מתחת ליעד';
+          simBadge.className = 'inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-rose-100 dark:bg-rose-900/70 text-rose-800 dark:text-rose-200';
+          simVsTarget.textContent = `פער של ${Math.abs(diffTarget).toFixed(2)} נק׳ ממוצע מיעד ${state.targetGPA}`;
+          simVsTarget.className = 'mt-1.5 text-[11px] font-bold text-rose-600 dark:text-rose-400 truncate';
+        }
+      } else {
+        simEl.textContent = '—';
+        simBadge.textContent = 'ממתין';
+        simBadge.className = 'inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300';
+        simDelta.textContent = '';
+        simVsTarget.textContent = 'הוסף קורסים כדי להתחיל סימולציה';
+        simVsTarget.className = 'mt-1.5 text-[11px] font-medium text-slate-500 dark:text-slate-400 truncate';
+      }
+
+      // KPI 3: Target Controls Sync (avoid clobbering while user types)
+      const targetInput = document.getElementById('input-target-gpa');
+      const targetSlider = document.getElementById('slider-target-gpa');
+      const threshInput = document.getElementById('input-moedb-threshold');
+      if (document.activeElement !== targetInput) targetInput.value = state.targetGPA;
+      if (document.activeElement !== targetSlider) targetSlider.value = Math.round(state.targetGPA);
+      if (document.activeElement !== threshInput) threshInput.value = state.moedBThreshold;
+
+      document.querySelectorAll('.goal-pill').forEach((btn) => {
+        const g = Number(btn.dataset.goal);
+        if (Math.abs(g - state.targetGPA) < 0.01) {
+          btn.className = 'goal-pill px-1.5 py-0.5 rounded-md text-[10px] font-black cursor-pointer transition-colors bg-sky-400 text-navy-950';
+        } else {
+          btn.className = 'goal-pill px-1.5 py-0.5 rounded-md text-[10px] font-bold cursor-pointer transition-colors bg-slate-800 text-slate-300 hover:bg-slate-700';
+        }
+      });
+
+      // KPI 4: Max Possible GPA
+      const maxEl = document.getElementById('kpi-max-gpa');
+      const maxNoMoedBEl = document.getElementById('kpi-max-no-moedb');
+      const maxSubEl = document.getElementById('kpi-max-sub');
+
+      if (m.maxGPACurrent !== null) {
+        maxEl.textContent = m.maxGPACurrent.toFixed(2);
+        if (m.activeMoedBCount > 0 && Math.abs(m.maxGPACurrent - m.maxGPANoMoedB) >= 0.01) {
+          maxNoMoedBEl.textContent = `(בלי מועד ב׳: ${m.maxGPANoMoedB.toFixed(2)})`;
+          maxSubEl.textContent = `כולל ${m.activeMoedBCount} סימולציות מועד ב׳ פעילות`;
+        } else {
+          maxNoMoedBEl.textContent = '';
+          maxSubEl.textContent = m.upcoming.length > 0
+            ? `אם תוציא 100 ב-${m.upcoming.length} הקורסים שנותרו`
+            : 'כל הקורסים הפעילים כבר הוזנו';
+        }
+      } else {
+        maxEl.textContent = '—';
+        maxNoMoedBEl.textContent = '';
+        maxSubEl.textContent = 'אם תוציא 100 בכל הקורסים שנותרו';
+      }
+    }
+
+    /**
+     * Renders the Smart Action Plan Engine ("מה אני צריך לעשות כדי להגיע ליעד?")
+     */
+    function renderAdvisor(m) {
+      const onboardingCard = document.getElementById('onboarding-card');
+      const advisorSection = document.getElementById('advisor-section');
+      const chartSection = document.getElementById('chart-section');
+
+      const hasCourses = state.courses.length > 0;
+      onboardingCard.classList.toggle('hidden', hasCourses);
+      advisorSection.classList.toggle('hidden', !hasCourses);
+      chartSection.classList.toggle('hidden', !hasCourses);
+
+      if (!hasCourses) return;
+
+      const banner = document.getElementById('advisor-required-banner');
+      const weightUnit = state.isWeighted ? 'נקודות-שעה' : 'נקודות';
+
+      // --- Block 1: Required Average Status Banner ---
+      if (m.active.length === 0) {
+        banner.className = 'rounded-2xl p-4 sm:p-5 border bg-slate-50 dark:bg-slate-800/60 border-slate-200 dark:border-slate-700';
+        banner.innerHTML = `
+          <div class="text-sm font-bold text-slate-700 dark:text-slate-200">כל הקורסים שלך מוגדרים כרגע כ״לא נכלל״.</div>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">החזר לפחות קורס אחד לסטטוס ״נבחנתי״ או ״טרם נבחנתי״ כדי לחשב את הדרך ליעד.</p>
+        `;
+      } else if (m.upcoming.length === 0) {
+        // All active courses are already completed
+        const met = m.simulatedGPA >= state.targetGPA - 0.004;
+        if (met) {
+          banner.className = 'rounded-2xl p-4 sm:p-5 border bg-emerald-50 dark:bg-emerald-950/35 border-emerald-200 dark:border-emerald-800';
+          banner.innerHTML = `
+            <div class="flex items-start gap-3">
+              <div class="w-9 h-9 rounded-xl bg-emerald-500 text-white flex items-center justify-center shrink-0 font-black text-lg">✓</div>
+              <div>
+                <h3 class="text-sm sm:text-base font-extrabold text-emerald-950 dark:text-emerald-200">
+                  מעולה! הממוצע שלך (${m.simulatedGPA.toFixed(2)}) כבר עומד ביעד ${state.targetGPA}!
+                </h3>
+                <p class="text-xs sm:text-sm text-emerald-800 dark:text-emerald-300 mt-1">
+                  כל ${m.completed.length} הקורסים הפעילים שלך כבר נבחנו. אפשר להעלות את היעד או לבדוק שיפורים נוספים במועדי ב׳.
+                </p>
+              </div>
+            </div>
+          `;
+        } else {
+          const deficit = Math.abs(m.simDiffFromTargetSum).toFixed(1).replace(/\.0$/, '');
+          banner.className = 'rounded-2xl p-4 sm:p-5 border bg-rose-50 dark:bg-rose-950/35 border-rose-200 dark:border-rose-800';
+          banner.innerHTML = `
+            <div class="flex items-start gap-3">
+              <div class="w-9 h-9 rounded-xl bg-rose-500 text-white flex items-center justify-center shrink-0 font-black text-lg">!</div>
+              <div>
+                <h3 class="text-sm sm:text-base font-extrabold text-rose-950 dark:text-rose-200">
+                  כרגע חסרות ${deficit} ${weightUnit} כדי להגיע לממוצע ${state.targetGPA}
+                </h3>
+                <p class="text-xs sm:text-sm text-rose-800 dark:text-rose-300 mt-1">
+                  מכיוון שכל הקורסים הפעילים כבר נבחנו, הדרך להגיע ליעד היא לשפר ציונים באמצעות מועדי ב׳ — בחר מההמלצות למטה או לחץ על ״בנה לי מסלול ריאלי ליעד״.
+                </p>
+              </div>
+            </div>
+          `;
+        }
+      } else {
+        // We have upcoming courses!
+        const req = m.requiredUpcomingAvg;
+        const budget = Math.max(0, m.pointsBudgetBelow100);
+        const budgetFmt = budget.toFixed(1).replace(/\.0$/, '');
+
+        if (req <= 0) {
+          banner.className = 'rounded-2xl p-4 sm:p-5 border bg-emerald-50 dark:bg-emerald-950/35 border-emerald-200 dark:border-emerald-800';
+          banner.innerHTML = `
+            <div class="flex items-start gap-3">
+              <div class="w-9 h-9 rounded-xl bg-emerald-500 text-white flex items-center justify-center shrink-0 font-black text-lg">★</div>
+              <div>
+                <h3 class="text-sm sm:text-base font-extrabold text-emerald-950 dark:text-emerald-200">
+                  יעד ${state.targetGPA} כבר מובטח מתמטית!
+                </h3>
+                <p class="text-xs sm:text-sm text-emerald-800 dark:text-emerald-300 mt-1">
+                  הציונים שכבר צברת גבוהים מספיק כדי לשמור על היעד בביטחון מלא. כוון ליעד גבוה יותר כדי להמשיך להצטיין.
+                </p>
+              </div>
+            </div>
+          `;
+        } else if (req <= 85) {
+          banner.className = 'rounded-2xl p-4 sm:p-5 border bg-emerald-50 dark:bg-emerald-950/35 border-emerald-200 dark:border-emerald-800';
+          banner.innerHTML = `
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+              <div class="flex items-start gap-3">
+                <div class="w-10 h-10 rounded-xl bg-emerald-500 text-white flex items-center justify-center shrink-0 font-black text-lg">✓</div>
+                <div>
+                  <h3 class="text-sm sm:text-base font-extrabold text-emerald-950 dark:text-emerald-200">
+                    מצב מעולה! ליעד ${state.targetGPA} נדרש ממוצע של <span class="underline decoration-2 underline-offset-4">${req.toFixed(2)}</span> בלבד ב-${m.upcoming.length} הקורסים שנותרו
+                  </h3>
+                  <p class="text-xs sm:text-sm text-emerald-800 dark:text-emerald-300 mt-1">
+                    <strong>תקציב איבוד נקודות:</strong> יש לך מרווח נוח של <strong>${budgetFmt} ${weightUnit}</strong> מתחת ל-100 בשאר המבחנים.
+                  </p>
+                </div>
+              </div>
+              <div class="px-3.5 py-2 rounded-xl bg-white/80 dark:bg-emerald-900/50 border border-emerald-200 dark:border-emerald-700 text-center shrink-0">
+                <div class="text-[11px] font-bold text-emerald-700 dark:text-emerald-300">נדרש בשאר</div>
+                <div class="text-2xl font-black text-emerald-900 dark:text-white tabular-nums">${req.toFixed(1)}</div>
+              </div>
+            </div>
+          `;
+        } else if (req <= 100.0001) {
+          const isTight = req >= 95;
+          banner.className = isTight
+            ? 'rounded-2xl p-4 sm:p-5 border bg-amber-50 dark:bg-amber-950/35 border-amber-300 dark:border-amber-700'
+            : 'rounded-2xl p-4 sm:p-5 border bg-ocean-50 dark:bg-ocean-950/35 border-ocean-200 dark:border-ocean-800';
+          const titleColor = isTight ? 'text-amber-950 dark:text-amber-200' : 'text-navy-900 dark:text-sky-100';
+          const subColor = isTight ? 'text-amber-900/90 dark:text-amber-300' : 'text-ocean-900/90 dark:text-sky-300';
+          const badgeBg = isTight ? 'bg-amber-500' : 'bg-ocean-600';
+
+          banner.innerHTML = `
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+              <div class="flex items-start gap-3">
+                <div class="w-10 h-10 rounded-xl ${badgeBg} text-white flex items-center justify-center shrink-0 font-black text-base">
+                  ${isTight ? '⚡' : '🎯'}
+                </div>
+                <div>
+                  <h3 class="text-sm sm:text-base font-extrabold ${titleColor}">
+                    כדי להגיע לממוצע ${state.targetGPA} תצטרך ממוצע <span class="underline decoration-2 underline-offset-4">${Math.min(100, req).toFixed(2)}</span> ב-${m.upcoming.length} הקורסים שנותרו
+                  </h3>
+                  <p class="text-xs sm:text-sm ${subColor} mt-1">
+                    <strong>תקציב איבוד נקודות:</strong> מותר לך לאבד בסך הכל עד <strong>${budgetFmt} ${weightUnit}</strong> מתחת ל-100 בכל המבחנים שנותרו${isTight ? ' — שווה מאוד להפעיל מועד ב׳ אחד לפחות כדי לפתוח מרווח נשימה!' : '.'}
+                  </p>
+                </div>
+              </div>
+              <div class="px-3.5 py-2 rounded-xl bg-white/90 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-700 text-center shrink-0">
+                <div class="text-[11px] font-bold text-slate-500 dark:text-slate-400">נדרש בשאר</div>
+                <div class="text-2xl font-black ${isTight ? 'text-amber-600 dark:text-amber-400' : 'text-ocean-700 dark:text-sky-400'} tabular-nums">${Math.min(100, req).toFixed(2)}</div>
+              </div>
+            </div>
+          `;
+        } else {
+          // Mathematically impossible without Moed B!
+          const deficitPoints = Math.abs(m.pointsBudgetBelow100).toFixed(1).replace(/\.0$/, '');
+          banner.className = 'rounded-2xl p-4 sm:p-5 border bg-rose-50 dark:bg-rose-950/40 border-rose-300 dark:border-rose-800';
+          banner.innerHTML = `
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+              <div class="flex items-start gap-3">
+                <div class="w-10 h-10 rounded-xl bg-rose-600 text-white flex items-center justify-center shrink-0 font-black text-lg">!</div>
+                <div>
+                  <h3 class="text-sm sm:text-base font-extrabold text-rose-950 dark:text-rose-200">
+                    יעד ${state.targetGPA} חסום מתמטית ללא מועד ב׳ (נדרש ${req.toFixed(1)} מעל 100)
+                  </h3>
+                  <p class="text-xs sm:text-sm text-rose-900/90 dark:text-rose-300 mt-1">
+                    גם אם תוציא <strong>100 בכל ${m.upcoming.length} הקורסים שנותרו</strong>, התקרה שלך היא <strong>${m.maxGPACurrent.toFixed(2)}</strong> — חסרות לך <strong>${deficitPoints} ${weightUnit}</strong>. הפעל סימולציית מועד ב׳ מההמלצות למטה כדי לפתוח את הדרך ליעד!
+                  </p>
+                </div>
+              </div>
+              <div class="px-3.5 py-2 rounded-xl bg-white/90 dark:bg-rose-950 border border-rose-200 dark:border-rose-700 text-center shrink-0">
+                <div class="text-[11px] font-bold text-rose-700 dark:text-rose-300">תקרה נוכחית</div>
+                <div class="text-2xl font-black text-rose-700 dark:text-rose-300 tabular-nums">${m.maxGPACurrent.toFixed(2)}</div>
+              </div>
+            </div>
+          `;
+        }
+      }
+
+      // --- Block 2: Top 3 Highest-Impact Moed B Recommendations ---
+      const moedBWrapper = document.getElementById('advisor-moedb-wrapper');
+      const moedBCards = document.getElementById('advisor-moedb-cards');
+
+      if (m.moedBRecommendations.length === 0) {
+        moedBWrapper.classList.remove('hidden');
+        moedBCards.innerHTML = `
+          <div class="md:col-span-3 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-700/80 p-4 text-xs sm:text-sm text-slate-600 dark:text-slate-300 flex items-center gap-2.5">
+            <span class="text-emerald-500 text-base font-bold">✓</span>
+            <span>${m.completed.length === 0 ? 'ברגע שתסמן קורסים כ״נבחנתי״ ותזין ציונים, היועץ יזהה אוטומטית אילו מועדי ב׳ הכי משתלמים לך.' : 'אין כרגע קורסים שנבחנו מתחת לרף שלך — מצב הבסיס שלך חזק מאוד!'}</span>
+          </div>
+        `;
+      } else {
+        moedBWrapper.classList.remove('hidden');
+        moedBCards.innerHTML = m.moedBRecommendations
+          .map((rec, idx) => {
+            const c = rec.course;
+            const isOn = c.moedBEnabled;
+            const rankLabels = ['השפעה #1 (הכי משתלם)', 'השפעה #2', 'השפעה #3'];
+            const reqText =
+              rec.newRequiredAvg !== null
+                ? rec.newRequiredAvg > 100
+                  ? `מוריד את הפער (יידרש ${rec.newRequiredAvg.toFixed(1)} בשאר)`
+                  : `יוריד את הממוצע הנדרש בשאר המבחנים ל-<strong>${Math.max(0, rec.newRequiredAvg).toFixed(1)}</strong>`
+                : `יעלה את הממוצע הכללי שלך ישירות`;
+
+            return `
+              <div class="rounded-2xl p-4 border flex flex-col justify-between gap-3 transition-all ${
+                isOn
+                  ? 'bg-emerald-50/70 dark:bg-emerald-950/30 border-emerald-300 dark:border-emerald-700'
+                  : 'bg-slate-50/80 dark:bg-slate-800/60 border-slate-200 dark:border-slate-700 hover:border-ocean-400'
+              }">
+                <div>
+                  <div class="flex items-center justify-between gap-2 mb-1.5">
+                    <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full ${
+                      idx === 0
+                        ? 'bg-amber-100 dark:bg-amber-900/60 text-amber-900 dark:text-amber-200'
+                        : 'bg-slate-200/80 dark:bg-slate-700 text-slate-700 dark:text-slate-300'
+                    }">${rankLabels[idx]}</span>
+                    <span class="text-xs font-extrabold text-emerald-700 dark:text-emerald-400">+${rec.suggestedLiftGPA.toFixed(2)} לממוצע</span>
+                  </div>
+                  <h4 class="text-sm font-extrabold text-navy-900 dark:text-white">${escapeHTML(c.name)}</h4>
+                  <p class="text-xs text-slate-600 dark:text-slate-300 mt-1 leading-relaxed">
+                    שיפור מ-<strong>${c.officialGrade}</strong> ל-<strong>${rec.suggestedGrade}</strong> יעלה את הממוצע ב-<strong>+${rec.suggestedLiftGPA.toFixed(2)} נק׳</strong> ו${reqText}.
+                  </p>
+                </div>
+
+                <button
+                  type="button"
+                  data-action="apply-moedb-rec"
+                  data-id="${c.id}"
+                  data-suggested="${rec.suggestedGrade}"
+                  class="w-full py-2 px-3 rounded-xl text-xs font-extrabold transition-all cursor-pointer active:scale-95 ${
+                    isOn
+                      ? 'bg-emerald-600 text-white hover:bg-emerald-700'
+                      : 'bg-white dark:bg-navy-900 hover:bg-ocean-600 hover:text-white text-ocean-700 dark:text-sky-300 border border-ocean-300 dark:border-ocean-700'
+                  }"
+                >
+                  ${isOn ? `מועד ב׳ פעיל בסימולציה (${c.moedBGrade}) ✓` : `הפעל סימולציית מועד ב׳ (${rec.suggestedGrade})`}
+                </button>
+              </div>
+            `;
+          })
+          .join('');
+      }
+    }
+
+    /**
+     * Renders Filter Tabs & Interactive Course Cards
+     */
+    function renderCourses(m) {
+      // Update filter tabs labels & active styles
+      const tabCounts = {
+        all: `הכל (${state.courses.length})`,
+        completed: `נבחנתי (${m.completed.length})`,
+        upcoming: `טרם נבחנתי (${m.upcoming.length})`,
+        below_threshold: `מתחת לרף ${state.moedBThreshold} (${m.belowThresholdCount})`,
+        excluded: `לא נכלל (${m.excluded.length})`
+      };
+
+      document.querySelectorAll('.filter-tab').forEach((btn) => {
+        const f = btn.dataset.filter;
+        btn.textContent = tabCounts[f] || f;
+        if (f === state.activeFilter) {
+          btn.className = 'filter-tab shrink-0 px-3 py-1.5 rounded-xl text-xs font-extrabold transition-all cursor-pointer bg-ocean-600 text-white shadow-xs';
+        } else {
+          btn.className = 'filter-tab shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700';
+        }
+      });
+
+      const grid = document.getElementById('courses-grid');
+      const emptyFilter = document.getElementById('courses-empty-filter');
+
+      if (state.courses.length === 0) {
+        grid.innerHTML = '';
+        emptyFilter.classList.add('hidden');
+        return;
+      }
+
+      const query = state.searchQuery.trim().toLowerCase();
+      const filtered = state.courses.filter((c) => {
+        if (query && !c.name.toLowerCase().includes(query)) return false;
+        if (state.activeFilter === 'completed') return c.status === 'completed';
+        if (state.activeFilter === 'upcoming') return c.status === 'upcoming';
+        if (state.activeFilter === 'excluded') return c.status === 'excluded';
+        if (state.activeFilter === 'below_threshold') {
+          return c.status === 'completed' && getSimulatedGrade(c) < state.moedBThreshold;
+        }
+        return true;
+      });
+
+      if (filtered.length === 0) {
+        grid.innerHTML = '';
+        emptyFilter.classList.remove('hidden');
+        return;
+      }
+
+      emptyFilter.classList.add('hidden');
+      grid.innerHTML = filtered.map((c) => buildCourseCardHTML(c, m)).join('');
+    }
+
+    function buildCourseCardHTML(c, m) {
+      const w = getWeight(c);
+      const effGrade = getSimulatedGrade(c);
+      const isCompleted = c.status === 'completed';
+      const isUpcoming = c.status === 'upcoming';
+      const isExcluded = c.status === 'excluded';
+      const isBelowThreshold = isCompleted && effGrade < state.moedBThreshold;
+
+      // Impact badge calculation for active Moed B
+      let moedBImpactHTML = '';
+      if (isCompleted && c.moedBEnabled) {
+        const courseDiff = c.moedBGrade - c.officialGrade;
+        const gpaImpact = m.wTotal > 0 ? (courseDiff * w) / m.wTotal : 0;
+        const signCourse = courseDiff >= 0 ? `+${courseDiff}` : `${courseDiff}`;
+        const signGpa = gpaImpact >= 0 ? `+${gpaImpact.toFixed(2)}` : `${gpaImpact.toFixed(2)}`;
+        const colorCls = courseDiff >= 0
+          ? 'bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-200 border-emerald-200 dark:border-emerald-700'
+          : 'bg-rose-100 dark:bg-rose-900/60 text-rose-800 dark:text-rose-200 border-rose-200 dark:border-rose-700';
+        moedBImpactHTML = `
+          <span data-moedb-impact="${c.id}" class="inline-flex items-center px-2 py-0.5 rounded-lg text-[11px] font-extrabold border ${colorCls}">
+            ${signCourse} נק׳ בקורס | ${signGpa} לממוצע
+          </span>
+        `;
+      }
+
+      const cardBorder = isExcluded
+        ? 'bg-slate-100/80 dark:bg-slate-900/50 border-slate-200 dark:border-slate-800 opacity-75'
+        : isCompleted && c.moedBEnabled
+          ? 'bg-white dark:bg-navy-900 border-emerald-400/80 dark:border-emerald-700 ring-1 ring-emerald-400/30 shadow-xs'
+          : isBelowThreshold
+            ? 'bg-white dark:bg-navy-900 border-rose-300 dark:border-rose-800/80 shadow-xs'
+            : 'bg-white dark:bg-navy-900 border-slate-200 dark:border-slate-800 shadow-xs hover:shadow-md';
+
+      return `
+        <article data-course-card="${c.id}" class="rounded-2xl border p-4 flex flex-col justify-between gap-3 transition-all ${cardBorder}">
+          <!-- Card Header: Editable Name + Grade Pill -->
+          <div class="flex items-start justify-between gap-2.5">
+            <div class="min-w-0 flex-1 space-y-2">
+              <!-- Inline Editable Course Name -->
+              <input
+                type="text"
+                value="${escapeHTML(c.name)}"
+                data-action="edit-name"
+                data-id="${c.id}"
+                aria-label="שם הקורס"
+                class="w-full bg-transparent hover:bg-slate-50 dark:hover:bg-slate-800/70 focus:bg-slate-50 dark:focus:bg-slate-800 px-1.5 -mr-1.5 py-0.5 rounded-lg text-sm sm:text-base font-extrabold text-navy-900 dark:text-white border border-transparent focus:border-ocean-400 focus:outline-none transition-colors"
+              />
+
+              <!-- Status Select + Weight + Delete -->
+              <div class="flex flex-wrap items-center gap-1.5">
+                <select
+                  data-action="change-status"
+                  data-id="${c.id}"
+                  aria-label="סטטוס קורס"
+                  class="px-2 py-1 rounded-lg text-[11px] font-bold border cursor-pointer focus:outline-none focus:ring-2 focus:ring-ocean-500 ${
+                    isCompleted
+                      ? 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-800 dark:text-indigo-200 border-indigo-200 dark:border-indigo-800'
+                      : isUpcoming
+                        ? 'bg-ocean-50 dark:bg-ocean-950/60 text-ocean-800 dark:text-sky-200 border-ocean-200 dark:border-ocean-800'
+                        : 'bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border-slate-300 dark:border-slate-700'
+                  }"
+                >
+                  <option value="completed" ${isCompleted ? 'selected' : ''}>נבחנתי</option>
+                  <option value="upcoming" ${isUpcoming ? 'selected' : ''}>טרם נבחנתי</option>
+                  <option value="excluded" ${isExcluded ? 'selected' : ''}>מוקפא / לא נכלל</option>
+                </select>
+
+                <!-- Weight / Hours Input (Prominent in Weighted Mode, subtle otherwise) -->
+                <label class="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[11px] font-bold border ${
+                  state.isWeighted
+                    ? 'bg-amber-50 dark:bg-amber-950/50 border-amber-300 dark:border-amber-700 text-amber-900 dark:text-amber-200'
+                    : 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400'
+                }" title="משקל הקורס (שעות שבועיות / נקודות זכות)">
+                  <span>ש״ש:</span>
+                  <input
+                    type="number"
+                    min="0.5"
+                    max="20"
+                    step="0.5"
+                    value="${c.weight}"
+                    data-action="change-weight"
+                    data-id="${c.id}"
+                    class="w-10 bg-transparent text-center font-extrabold tabular-nums focus:outline-none"
+                  />
+                </label>
+
+                <button
+                  type="button"
+                  data-action="delete-course"
+                  data-id="${c.id}"
+                  title="מחק קורס"
+                  aria-label="מחק את הקורס ${escapeHTML(c.name)}"
+                  class="p-1 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/50 transition-colors cursor-pointer mr-auto"
+                >
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- Big Grade Display Pill -->
+            <div class="flex flex-col items-end shrink-0">
+              <div data-pill-box="${c.id}" class="px-3 py-1.5 rounded-2xl border text-center min-w-[60px] ${
+                isExcluded
+                  ? 'bg-slate-200 dark:bg-slate-800 text-slate-500 border-slate-300 dark:border-slate-700'
+                  : getGradePillClasses(effGrade)
+              }">
+                <div data-pill-val="${c.id}" class="text-xl font-black leading-none tabular-nums">${isExcluded ? '—' : effGrade}</div>
+                <div class="text-[10px] font-bold opacity-80 mt-0.5">
+                  ${isExcluded ? 'מוחרג' : isCompleted ? (c.moedBEnabled ? 'מועד ב׳' : 'רשמי') : 'יעד'}
+                </div>
+              </div>
+              ${isCompleted && c.moedBEnabled ? `<span class="text-[10px] font-bold text-slate-400 line-through mt-0.5">רשמי: ${c.officialGrade}</span>` : ''}
+            </div>
+          </div>
+
+          <!-- Body Controls Based on Status -->
+          ${
+            isCompleted
+              ? `
+                <div class="pt-3 border-t border-slate-100 dark:border-slate-800 space-y-3">
+                  <!-- Official Grade Slider & Input -->
+                  <div class="space-y-1.5">
+                    <div class="flex items-center justify-between gap-2">
+                      <span class="text-xs font-bold text-slate-600 dark:text-slate-300 flex items-center gap-1.5">
+                        ציון רשמי:
+                        ${isBelowThreshold ? `<span class="text-[10px] font-extrabold px-1.5 py-0.5 rounded bg-rose-100 dark:bg-rose-900/60 text-rose-700 dark:text-rose-200">מתחת לרף ${state.moedBThreshold}</span>` : ''}
+                      </span>
+                      <input
+                        type="number"
+                        min="0"
+                        max="100"
+                        value="${c.officialGrade}"
+                        data-action="official-input"
+                        data-id="${c.id}"
+                        aria-label="ציון רשמי ב${escapeHTML(c.name)}"
+                        class="w-16 px-2 py-1 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-center text-sm font-extrabold tabular-nums focus:outline-none focus:ring-2 focus:ring-ocean-500"
+                      />
+                    </div>
+                    <input
+                      type="range"
+                      min="0"
+                      max="100"
+                      step="1"
+                      value="${c.officialGrade}"
+                      data-action="official-slider"
+                      data-id="${c.id}"
+                      aria-label="סליידר ציון רשמי"
+                      class="w-full h-2 rounded-lg appearance-none bg-slate-200 dark:bg-slate-700 accent-ocean-600 cursor-pointer"
+                    />
+                  </div>
+
+                  <!-- Moed B Simulation Toggle & Controls -->
+                  <div class="rounded-xl p-2.5 ${c.moedBEnabled ? 'bg-emerald-50/80 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/80' : 'bg-slate-50 dark:bg-slate-800/50 border border-slate-200/70 dark:border-slate-700/70'} space-y-2">
+                    <div class="flex items-center justify-between gap-2">
+                      <label class="inline-flex items-center gap-2 cursor-pointer select-none">
+                        <input
+                          type="checkbox"
+                          data-action="toggle-moedb"
+                          data-id="${c.id}"
+                          ${c.moedBEnabled ? 'checked' : ''}
+                          class="sr-only peer"
+                        />
+                        <div class="relative w-9 h-5 bg-slate-300 dark:bg-slate-600 rounded-full peer peer-checked:bg-emerald-500 transition-colors after:content-[''] after:absolute after:top-0.5 after:right-0.5 after:bg-white after:rounded-full after:h-4 after:w-4 after:shadow-xs after:transition-all peer-checked:after:-translate-x-4"></div>
+                        <span class="text-xs font-extrabold ${c.moedBEnabled ? 'text-emerald-900 dark:text-emerald-200' : 'text-slate-600 dark:text-slate-300'}">סימולציית מועד ב׳</span>
+                      </label>
+                      ${
+                        c.moedBEnabled
+                          ? `<input
+                              type="number"
+                              min="0"
+                              max="100"
+                              value="${c.moedBGrade}"
+                              data-action="moedb-input"
+                              data-id="${c.id}"
+                              aria-label="ציון מועד ב' ב${escapeHTML(c.name)}"
+                              class="w-16 px-2 py-0.5 rounded-lg border border-emerald-400 dark:border-emerald-600 bg-white dark:bg-slate-900 text-center text-sm font-extrabold text-emerald-800 dark:text-emerald-200 tabular-nums focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                            />`
+                          : ''
+                      }
+                    </div>
+                    ${
+                      c.moedBEnabled
+                        ? `
+                          <input
+                            type="range"
+                            min="0"
+                            max="100"
+                            step="1"
+                            value="${c.moedBGrade}"
+                            data-action="moedb-slider"
+                            data-id="${c.id}"
+                            aria-label="סליידר מועד ב'"
+                            class="w-full h-2 rounded-lg appearance-none bg-emerald-200 dark:bg-emerald-900 accent-emerald-600 cursor-pointer"
+                          />
+                          <div class="flex items-center justify-between">${moedBImpactHTML}</div>
+                        `
+                        : ''
+                    }
+                  </div>
+                </div>
+              `
+              : isUpcoming
+                ? `
+                  <div class="pt-3 border-t border-slate-100 dark:border-slate-800 space-y-2.5">
+                    <div class="flex items-center justify-between gap-2">
+                      <span class="text-xs font-bold text-slate-600 dark:text-slate-300">ציון צפוי / יעד:</span>
+                      <input
+                        type="number"
+                        min="0"
+                        max="100"
+                        value="${c.targetGrade}"
+                        data-action="target-input"
+                        data-id="${c.id}"
+                        aria-label="ציון יעד ב${escapeHTML(c.name)}"
+                        class="w-16 px-2 py-1 rounded-lg border border-sky-300 dark:border-sky-700 bg-ocean-50/50 dark:bg-slate-800 text-center text-sm font-extrabold tabular-nums focus:outline-none focus:ring-2 focus:ring-ocean-500"
+                      />
+                    </div>
+                    <input
+                      type="range"
+                      min="0"
+                      max="100"
+                      step="1"
+                      value="${c.targetGrade}"
+                      data-action="target-slider"
+                      data-id="${c.id}"
+                      aria-label="סליידר ציון צפוי"
+                      class="w-full h-2 rounded-lg appearance-none bg-sky-100 dark:bg-slate-700 accent-sky-500 cursor-pointer"
+                    />
+                    <div class="pt-1 flex justify-end">
+                      <button
+                        type="button"
+                        data-action="mark-completed"
+                        data-id="${c.id}"
+                        class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 text-slate-700 dark:text-slate-300 hover:text-emerald-800 dark:hover:text-emerald-200 text-[11px] font-bold transition-colors cursor-pointer"
+                      >
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                        </svg>
+                        <span>סמן כנבחנתי</span>
+                      </button>
+                    </div>
+                  </div>
+                `
+                : `
+                  <div class="pt-3 border-t border-slate-200/70 dark:border-slate-800 flex items-center justify-between gap-2 text-xs text-slate-500 dark:text-slate-400">
+                    <span>קורס זה אינו מחושב כרגע בממוצע.</span>
+                    <button
+                      type="button"
+                      data-action="reactivate-course"
+                      data-id="${c.id}"
+                      class="px-2.5 py-1 rounded-lg bg-ocean-100 dark:bg-ocean-900/50 text-ocean-800 dark:text-sky-200 font-bold cursor-pointer hover:bg-ocean-200"
+                    >
+                      החזר לחישוב
+                    </button>
+                  </div>
+                `
+          }
+        </article>
+      `;
+    }
+
+    /**
+     * Renders Pure Responsive Interactive SVG Bar Chart
+     */
+    function renderChart(m) {
+      const wrapper = document.getElementById('svg-chart-wrapper');
+      const legendTarget = document.getElementById('legend-target-label');
+      legendTarget.textContent = `יעד אישי (${state.targetGPA})`;
+
+      // Update sort buttons
+      document.querySelectorAll('.chart-sort-btn').forEach((btn) => {
+        if (btn.dataset.sort === state.chartSort) {
+          btn.className = 'chart-sort-btn px-2.5 py-1 rounded-lg transition-all cursor-pointer bg-white dark:bg-navy-900 text-ocean-700 dark:text-sky-300 font-extrabold shadow-xs';
+        } else {
+          btn.className = 'chart-sort-btn px-2.5 py-1 rounded-lg transition-all cursor-pointer text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white';
+        }
+      });
+
+      const active = [...m.active];
+      if (active.length === 0) {
+        wrapper.innerHTML = `<div class="py-10 text-center text-sm text-slate-400">אין קורסים פעילים להצגה בגרף.</div>`;
+        return;
+      }
+
+      if (state.chartSort === 'desc') {
+        active.sort((a, b) => getSimulatedGrade(b) - getSimulatedGrade(a));
+      } else if (state.chartSort === 'asc') {
+        active.sort((a, b) => getSimulatedGrade(a) - getSimulatedGrade(b));
+      }
+
+      const isDark = state.theme === 'dark';
+      const minBarWidth = 54;
+      const chartPadLeft = 24;
+      const chartPadRight = 46;
+      const chartPadTop = 34;
+      const chartPadBottom = 64;
+      const plotHeight = 210;
+      const innerWidth = Math.max(600, active.length * minBarWidth);
+      const svgWidth = innerWidth + chartPadLeft + chartPadRight;
+      const svgHeight = plotHeight + chartPadTop + chartPadBottom;
+
+      const allVals = active.map((c) => getSimulatedGrade(c));
+      const minVal = Math.min(...allVals, state.targetGPA);
+      const yMin = minVal >= 65 ? 50 : 0;
+      const yMax = 100;
+      const yToPx = (val) => chartPadTop + plotHeight - ((Math.max(yMin, Math.min(yMax, val)) - yMin) / (yMax - yMin)) * plotHeight;
+
+      const axisColor = isDark ? '#334155' : '#e2e8f0';
+      const labelColor = isDark ? '#94a3b8' : '#64748b';
+      const textMainColor = isDark ? '#e2e8f0' : '#1e293b';
+
+      // Horizontal Y ticks
+      const ticks = yMin === 50 ? [50, 60, 70, 80, 90, 100] : [0, 25, 50, 75, 100];
+      const gridLinesSVG = ticks
+        .map((t) => {
+          const y = yToPx(t);
+          return `
+            <line x1="${chartPadLeft}" y1="${y}" x2="${svgWidth - chartPadRight}" y2="${y}" stroke="${axisColor}" stroke-width="1" />
+            <text x="${svgWidth - chartPadRight + 8}" y="${y + 4}" fill="${labelColor}" font-size="11" font-weight="700" text-anchor="start">${t}</text>
+          `;
+        })
+        .join('');
+
+      // Bars
+      const slotW = innerWidth / active.length;
+      const barW = Math.min(34, Math.max(18, slotW * 0.56));
+      const baseY = yToPx(yMin);
+
+      const barsSVG = active
+        .map((c, idx) => {
+          // Place RTL left-to-right visually from right side of plot
+          const cx = svgWidth - chartPadRight - slotW * (idx + 0.5);
+          const x = cx - barW / 2;
+          const eff = getSimulatedGrade(c);
+          const isComp = c.status === 'completed';
+          const isMoedBBoost = isComp && c.moedBEnabled && c.moedBGrade > c.officialGrade;
+
+          let barElements = '';
+          if (isMoedBBoost) {
+            const yOff = yToPx(c.officialGrade);
+            const yBoost = yToPx(c.moedBGrade);
+            const hOff = Math.max(2, baseY - yOff);
+            const hBoost = Math.max(2, yOff - yBoost);
+            const baseFill = c.officialGrade < state.moedBThreshold ? '#f43f5e' : (isDark ? '#6366f1' : '#0f172a');
+            barElements = `
+              <rect x="${x}" y="${yOff}" width="${barW}" height="${hOff}" fill="${baseFill}" rx="3" />
+              <rect x="${x}" y="${yBoost}" width="${barW}" height="${hBoost}" fill="url(#moedBStripe)" stroke="#10b981" stroke-width="1.5" rx="5" />
+            `;
+          } else {
+            const yTop = yToPx(eff);
+            const h = Math.max(3, baseY - yTop);
+            let fill = isDark ? '#38bdf8' : '#0ea5e9'; // Upcoming default
+            if (isComp) {
+              fill = eff < state.moedBThreshold ? '#f43f5e' : (isDark ? '#6366f1' : '#0f172a');
+            } else if (eff < state.moedBThreshold) {
+              fill = '#f59e0b';
+            }
+            barElements = `<rect x="${x}" y="${yTop}" width="${barW}" height="${h}" fill="${fill}" rx="6" />`;
+          }
+
+          const topValY = yToPx(eff) - 7;
+          const shortName = c.name.length > 10 ? c.name.slice(0, 9) + '…' : c.name;
+
+          return `
+            <g class="chart-bar-group cursor-pointer" data-course-id="${c.id}">
+              <!-- Invisible wider hit target for effortless hover/tap -->
+              <rect x="${cx - slotW / 2}" y="${chartPadTop}" width="${slotW}" height="${plotHeight + 48}" fill="transparent" />
+              ${barElements}
+              <text x="${cx}" y="${topValY}" fill="${textMainColor}" font-size="11" font-weight="800" text-anchor="middle">${eff}</text>
+              <text x="${cx}" y="${baseY + 18}" fill="${textMainColor}" font-size="11" font-weight="700" text-anchor="middle">${escapeHTML(shortName)}</text>
+              <text x="${cx}" y="${baseY + 33}" fill="${labelColor}" font-size="9.5" font-weight="600" text-anchor="middle">
+                ${isComp ? (c.moedBEnabled ? 'מועד ב׳' : 'רשמי') : 'יעד'}
+              </text>
+            </g>
+          `;
+        })
+        .join('');
+
+      // Live Target GPA Dashed Reference Line
+      const targetY = yToPx(state.targetGPA);
+      const targetLineSVG = `
+        <line x1="${chartPadLeft}" y1="${targetY}" x2="${svgWidth - chartPadRight}" y2="${targetY}" stroke="#f59e0b" stroke-width="2.2" stroke-dasharray="7 5" />
+        <rect x="${chartPadLeft + 4}" y="${targetY - 21}" width="84" height="18" rx="6" fill="#f59e0b" />
+        <text x="${chartPadLeft + 46}" y="${targetY - 9}" fill="#0f172a" font-size="10.5" font-weight="900" text-anchor="middle">יעד: ${state.targetGPA}</text>
+      `;
+
+      // Subtle Simulated Average Line
+      let simLineSVG = '';
+      if (m.simulatedGPA !== null) {
+        const simY = yToPx(m.simulatedGPA);
+        simLineSVG = `
+          <line x1="${chartPadLeft}" y1="${simY}" x2="${svgWidth - chartPadRight}" y2="${simY}" stroke="#0284c7" stroke-width="1.5" stroke-opacity="0.7" />
+        `;
+      }
+
+      wrapper.innerHTML = `
+        <svg viewBox="0 0 ${svgWidth} ${svgHeight}" class="w-full h-auto min-w-[${Math.min(640, svgWidth)}px] select-none" role="img" aria-label="גרף ציוני הקורסים">
+          <defs>
+            <pattern id="moedBStripe" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+              <rect width="6" height="6" fill="#10b981" />
+              <line x1="0" y1="0" x2="0" y2="6" stroke="#a7f3d0" stroke-width="2.5" />
+            </pattern>
+          </defs>
+          ${gridLinesSVG}
+          ${barsSVG}
+          ${simLineSVG}
+          ${targetLineSVG}
+        </svg>
+      `;
+
+      // Bind hover/tap tooltips on SVG bars
+      const tooltip = document.getElementById('chart-tooltip');
+      wrapper.querySelectorAll('.chart-bar-group').forEach((g) => {
+        const showTip = (evt) => {
+          const c = state.courses.find((item) => item.id === g.dataset.courseId);
+          if (!c) return;
+          const eff = getSimulatedGrade(c);
+          const diff = eff - state.targetGPA;
+          const statusStr = c.status === 'completed'
+            ? (c.moedBEnabled ? `נבחנתי (${c.officialGrade}) ← מועד ב׳ (${c.moedBGrade})` : `ציון רשמי: ${c.officialGrade}`)
+            : `טרם נבחנתי • יעד: ${c.targetGrade}`;
+          tooltip.innerHTML = `
+            <div class="font-extrabold text-sky-300">${escapeHTML(c.name)}</div>
+            <div class="text-slate-200 mt-0.5">${statusStr}</div>
+            <div class="text-[11px] text-slate-300 mt-0.5">משקל: ${c.weight} ש״ש • ${diff >= 0 ? `+${diff.toFixed(1)}` : diff.toFixed(1)} מהיעד</div>
+          `;
+          tooltip.classList.remove('hidden');
+
+          const parentRect = wrapper.parentElement.getBoundingClientRect();
+          const clientX = evt.touches ? evt.touches[0].clientX : evt.clientX;
+          const clientY = evt.touches ? evt.touches[0].clientY : evt.clientY;
+          let left = clientX - parentRect.left - 90;
+          left = Math.max(8, Math.min(parentRect.width - 210, left));
+          const top = Math.max(4, clientY - parentRect.top - 78);
+          tooltip.style.left = `${left}px`;
+          tooltip.style.top = `${top}px`;
+        };
+        const hideTip = () => tooltip.classList.add('hidden');
+
+        g.addEventListener('mouseenter', showTip);
+        g.addEventListener('mousemove', showTip);
+        g.addEventListener('mouseleave', hideTip);
+        g.addEventListener('touchstart', showTip, { passive: true });
+      });
+    }
+
+    /**
+     * Full render pipeline + optional cloud save trigger
+     */
+    function renderAll(shouldSave = true) {
+      renderHeaderProfile();
+      const m = computeMetrics();
+      renderDashboard(m);
+      renderAdvisor(m);
+      renderCourses(m);
+      renderChart(m);
+      if (shouldSave) scheduleCloudSave();
+    }
+
+    /**
+     * Smooth live update during slider drag / typing (avoids rebuilding the active card DOM)
+     */
+    function renderLiveSingleCourse(courseId) {
+      const m = computeMetrics();
+      renderDashboard(m);
+      renderAdvisor(m);
+      renderChart(m);
+
+      const c = state.courses.find((item) => item.id === courseId);
+      if (c) {
+        const eff = getSimulatedGrade(c);
+        const pillVal = document.querySelector(`[data-pill-val="${courseId}"]`);
+        const pillBox = document.querySelector(`[data-pill-box="${courseId}"]`);
+        if (pillVal) pillVal.textContent = eff;
+        if (pillBox) {
+          pillBox.className = `px-3 py-1.5 rounded-2xl border text-center min-w-[60px] ${getGradePillClasses(eff)}`;
+        }
+        if (c.status === 'completed' && c.moedBEnabled) {
+          const impactEl = document.querySelector(`[data-moedb-impact="${courseId}"]`);
+          if (impactEl) {
+            const w = getWeight(c);
+            const courseDiff = c.moedBGrade - c.officialGrade;
+            const gpaImpact = m.wTotal > 0 ? (courseDiff * w) / m.wTotal : 0;
+            impactEl.textContent = `${courseDiff >= 0 ? '+' : ''}${courseDiff} נק׳ בקורס | ${gpaImpact >= 0 ? '+' : ''}${gpaImpact.toFixed(2)} לממוצע`;
+          }
+        }
+      }
+      scheduleCloudSave();
+    }
+
+    /**
+     * =======================================================================
+     * 6. SMART AUTO-SOLVE ENGINE ("בנה לי מסלול ריאלי ליעד")
+     * =======================================================================
+     */
+    function autoSolvePathToGoal() {
+      const m = computeMetrics();
+      if (m.active.length === 0) {
+        showToast('הוסף קודם קורסים כדי לבנות מסלול ליעד', 'amber');
+        return;
+      }
+
+      const target = state.targetGPA;
+      const wTotal = m.wTotal;
+      const targetSum = target * wTotal;
+
+      // Helper to compute current completed simulated sum
+      const calcCompletedSimSum = () =>
+        state.courses
+          .filter((c) => c.status === 'completed')
+          .reduce((acc, c) => acc + getSimulatedGrade(c) * getWeight(c), 0);
+
+      const upcoming = state.courses.filter((c) => c.status === 'upcoming');
+      const wUpcoming = upcoming.reduce((acc, c) => acc + getWeight(c), 0);
+
+      // Step 1: If no upcoming courses OR required average on upcoming > 95, enable highest-impact Moed B courses
+      let enabledMoedBNames = [];
+      const candidates = state.courses
+        .filter((c) => c.status === 'completed' && c.officialGrade < 100)
+        .sort((a, b) => (100 - b.officialGrade) * getWeight(b) - (100 - a.officialGrade) * getWeight(a));
+
+      for (const c of candidates) {
+        const currentCompletedSum = calcCompletedSimSum();
+        const neededOnUpcoming = wUpcoming > 0 ? (targetSum - currentCompletedSum) / wUpcoming : Infinity;
+
+        // Stop if already easily met
+        if (wUpcoming === 0 && currentCompletedSum >= targetSum - 0.001) break;
+        if (wUpcoming > 0 && neededOnUpcoming <= Math.min(95, target + 2)) break;
+
+        // Enable Moed B with a realistic boost
+        c.moedBEnabled = true;
+        const boostTarget = Math.min(100, Math.max(Math.ceil(target), c.officialGrade + 14, 95));
+        if (c.moedBGrade < boostTarget) c.moedBGrade = boostTarget;
+        enabledMoedBNames.push(c.name);
+      }
+
+      // If still mathematically impossible, push enabled Moed B grades up to 100
+      if (wUpcoming > 0 && (targetSum - calcCompletedSimSum()) / wUpcoming > 100) {
+        candidates.forEach((c) => {
+          if (c.moedBEnabled) c.moedBGrade = 100;
+        });
+      } else if (wUpcoming === 0 && calcCompletedSimSum() < targetSum) {
+        candidates.forEach((c) => {
+          if (c.moedBEnabled) c.moedBGrade = 100;
+        });
+      }
+
+      // Step 2: Distribute realistic integer grades across upcoming courses to hit target cleanly
+      if (wUpcoming > 0) {
+        const remainingNeededSum = targetSum - calcCompletedSimSum();
+        const exactReqAvg = remainingNeededSum / wUpcoming;
+        const baseGrade = Math.max(60, Math.min(100, Math.floor(exactReqAvg)));
+
+        upcoming.forEach((c) => {
+          c.targetGrade = baseGrade;
+        });
+
+        // Fine-tune upwards by +1 on upcoming courses until simulated GPA >= target
+        let guard = 0;
+        while (guard < 500) {
+          const currentTotal = calcCompletedSimSum() + upcoming.reduce((acc, c) => acc + c.targetGrade * getWeight(c), 0);
+          if (currentTotal >= targetSum - 0.001) break;
+          const lowest = upcoming.filter((c) => c.targetGrade < 100).sort((a, b) => a.targetGrade - b.targetGrade)[0];
+          if (!lowest) break;
+          lowest.targetGrade += 1;
+          guard++;
+        }
+      }
+
+      renderAll(true);
+      const updated = computeMetrics();
+      if (updated.simulatedGPA >= target - 0.005) {
+        const extra = enabledMoedBNames.length > 0 ? ` (כולל ${enabledMoedBNames.length} מועדי ב׳)` : '';
+        showToast(`נבנה מסלול ריאלי ליעד ${target}! הממוצע בסימולציה: ${updated.simulatedGPA.toFixed(2)}${extra}`, 'emerald');
+      } else {
+        showToast(`המערכת מיקסמה את כל האפשרויות עד לממוצע ${updated.simulatedGPA.toFixed(2)}`, 'amber');
+      }
+    }
+
+    /**
+     * =======================================================================
+     * 7. PRESETS & WHATSAPP EXPORT
+     * =======================================================================
+     */
+    function applyPreset(presetKey) {
+      closeModal('modal-presets');
+
+      if (presetKey === 'empty_custom') {
+        state.courses = [];
+        state.activeFilter = 'all';
+        state.searchQuery = '';
+        renderAll(true);
+        // Open add course form immediately for smooth UX
+        document.getElementById('form-add-course').classList.remove('hidden');
+        document.getElementById('new-course-name').focus();
+        showToast('נפתח מסלול ריק — הוסף את הקורס הראשון שלך!', 'ocean');
+        return;
+      }
+
+      const preset = TRACK_PRESETS[presetKey];
+      if (!preset) return;
+
+      // Fresh clone with unique IDs
+      state.courses = preset.courses.map((c) => ({ ...c, id: uidGen() }));
+      if (!state.studentTrack) {
+        state.studentTrack = presetKey === 'demo_sample' ? 'הנדסאי מכונות (דוגמה)' : preset.label;
+      }
+      if (preset.targetGPA) state.targetGPA = preset.targetGPA;
+      if (preset.moedBThreshold) state.moedBThreshold = preset.moedBThreshold;
+      state.activeFilter = 'all';
+      state.searchQuery = '';
+
+      renderAll(true);
+      showToast(`נטען מסלול: ${preset.label} (${state.courses.length} קורסים)`, 'emerald');
+    }
+
+    function copyWhatsAppSummary() {
+      const m = computeMetrics();
+      if (m.active.length === 0) {
+        showToast('אין קורסים פעילים להעתקה', 'amber');
+        return;
+      }
+
+      const header = state.studentName
+        ? `📊 *סיכום ציונים — ${state.studentName}${state.studentTrack ? ` (${state.studentTrack})` : ''}*`
+        : `📊 *סיכום ציונים — מכללת SeaTech*`;
+
+      const lines = [
+        header,
+        `• מצב חישוב: ${state.isWeighted ? 'ממוצע משוקלל (ש״ש)' : 'ממוצע פשוט'}`,
+        `• ממוצע רשמי נוכחי: *${m.officialGPA !== null ? m.officialGPA.toFixed(2) : 'טרם הוזנו ציונים'}* (${m.completed.length} קורסים)`,
+        `• ממוצע סופי בסימולציה: *${m.simulatedGPA.toFixed(2)}*`,
+        `• יעד אישי: *${state.targetGPA}* | תקרה מקסימלית: *${m.maxGPACurrent.toFixed(2)}*`
+      ];
+
+      if (m.upcoming.length > 0 && m.requiredUpcomingAvg !== null) {
+        if (m.requiredUpcomingAvg > 100) {
+          lines.push(`• מצב מול היעד: נדרש מועד ב׳ כדי לפתוח את יעד ${state.targetGPA}`);
+        } else {
+          lines.push(`• ממוצע נדרש ב-${m.upcoming.length} הקורסים שנותרו: *${Math.max(0, m.requiredUpcomingAvg).toFixed(2)}*`);
+        }
+      }
+
+      const activeMoeds = m.completed.filter((c) => c.moedBEnabled);
+      if (activeMoeds.length > 0) {
+        lines.push(`• מועדי ב׳ בתכנון: ${activeMoeds.map((c) => `${c.name} (${c.officialGrade} ← ${c.moedBGrade})`).join(', ')}`);
+      }
+
+      const ok = copyTextFallback(lines.join('\n'));
+      if (ok) {
+        showToast('הסיכום הועתק! אפשר להדביק ישירות בוואטסאפ', 'emerald');
+      } else {
+        showToast('לא ניתן היה להעתיק אוטומטית בדפדפן זה', 'amber');
+      }
+    }
+
+    /**
+     * =======================================================================
+     * 8. EVENT BINDING & DELEGATION
+     * =======================================================================
+     */
+    function bindEvents() {
+      // Theme Toggles (Mobile & Desktop)
+      const toggleTheme = () => {
+        state.theme = state.theme === 'dark' ? 'light' : 'dark';
+        applyTheme(state.theme);
+        renderChart(computeMetrics());
+        scheduleCloudSave();
+      };
+      document.getElementById('btn-theme-mobile').addEventListener('click', toggleTheme);
+      document.getElementById('btn-theme-desktop').addEventListener('click', toggleTheme);
+
+      // Google Sign-In
+      document.getElementById('btn-google-auth').addEventListener('click', handleGoogleAuthClick);
+
+      // Modals open/close
+      document.getElementById('btn-open-presets').addEventListener('click', () => openModal('modal-presets'));
+      document.getElementById('btn-edit-profile').addEventListener('click', () => {
+        document.getElementById('profile-name-input').value = state.studentName;
+        document.getElementById('profile-track-input').value = state.studentTrack;
+        openModal('modal-profile');
+      });
+      document.getElementById('btn-full-reset').addEventListener('click', () => openModal('modal-confirm-reset'));
+
+      document.querySelectorAll('[data-close-modal]').forEach((btn) => {
+        btn.addEventListener('click', () => closeModal(btn.dataset.closeModal));
+      });
+
+      // Close modal on backdrop click
+      ['modal-presets', 'modal-profile', 'modal-confirm-reset'].forEach((id) => {
+        document.getElementById(id).addEventListener('click', (e) => {
+          if (e.target.id === id) closeModal(id);
+        });
+      });
+
+      // Save Profile Form
+      document.getElementById('form-profile').addEventListener('submit', (e) => {
+        e.preventDefault();
+        state.studentName = document.getElementById('profile-name-input').value.trim();
+        state.studentTrack = document.getElementById('profile-track-input').value.trim();
+        closeModal('modal-profile');
+        renderHeaderProfile();
+        scheduleCloudSave();
+        showToast('הפרטים האישיים נשמרו', 'emerald');
+      });
+
+      // Confirm Full Reset
+      document.getElementById('btn-confirm-full-reset').addEventListener('click', () => {
+        const preservedTheme = state.theme;
+        state = createDefaultState();
+        state.theme = preservedTheme;
+        closeModal('modal-confirm-reset');
+        renderAll(true);
+        showToast('הנתונים אופסו — בחר מסלול חדש כדי להתחיל', 'amber');
+      });
+
+      // Preset Triggers (both Onboarding & Modal)
+      document.querySelectorAll('.preset-trigger').forEach((btn) => {
+        btn.addEventListener('click', () => applyPreset(btn.dataset.preset));
+      });
+
+      // Average Mode Toggle
+      document.getElementById('btn-mode-simple').addEventListener('click', () => {
+        if (!state.isWeighted) return;
+        state.isWeighted = false;
+        renderAll(true);
+        showToast('עברת לממוצע פשוט (משקל שווה לכל קורס)');
+      });
+      document.getElementById('btn-mode-weighted').addEventListener('click', () => {
+        if (state.isWeighted) return;
+        state.isWeighted = true;
+        renderAll(true);
+        showToast('עברת לממוצע משוקלל לפי שעות שבועיות / נ״ז');
+      });
+
+      // Mobile Sticky Compact Toggle
+      document.getElementById('btn-toggle-sticky-compact').addEventListener('click', () => {
+        state.stickyCompact = !state.stickyCompact;
+        renderDashboard(computeMetrics());
+      });
+
+      // Target GPA Controls (Slider, Input, Quick Pills)
+      const targetInput = document.getElementById('input-target-gpa');
+      const targetSlider = document.getElementById('slider-target-gpa');
+      const threshInput = document.getElementById('input-moedb-threshold');
+
+      targetSlider.addEventListener('input', (e) => {
+        state.targetGPA = clampTarget(e.target.value);
+        targetInput.value = state.targetGPA;
+        const m = computeMetrics();
+        renderDashboard(m);
+        renderAdvisor(m);
+        renderChart(m);
+        scheduleCloudSave();
+      });
+
+      targetInput.addEventListener('input', (e) => {
+        if (e.target.value === '') return;
+        state.targetGPA = clampTarget(e.target.value);
+        targetSlider.value = Math.round(state.targetGPA);
+        const m = computeMetrics();
+        renderDashboard(m);
+        renderAdvisor(m);
+        renderChart(m);
+        scheduleCloudSave();
+      });
+
+      targetInput.addEventListener('change', (e) => {
+        state.targetGPA = clampTarget(e.target.value);
+        renderAll(true);
+      });
+
+      document.querySelectorAll('.goal-pill').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          state.targetGPA = Number(btn.dataset.goal);
+          renderAll(true);
+        });
+      });
+
+      threshInput.addEventListener('change', (e) => {
+        state.moedBThreshold = Math.max(55, Math.min(99, clampGrade(e.target.value)));
+        renderAll(true);
+      });
+
+      // Auto-Solve Path to Goal
+      document.getElementById('btn-auto-solve').addEventListener('click', autoSolvePathToGoal);
+
+      // Advisor Recommendation One-Click Apply (Delegated)
+      document.getElementById('advisor-moedb-cards').addEventListener('click', (e) => {
+        const btn = e.target.closest('[data-action="apply-moedb-rec"]');
+        if (!btn) return;
+        const course = state.courses.find((c) => c.id === btn.dataset.id);
+        if (!course) return;
+        course.moedBEnabled = true;
+        course.moedBGrade = clampGrade(btn.dataset.suggested);
+        renderAll(true);
+        showToast(`הופעלה סימולציית מועד ב׳ ב${course.name} על ציון ${course.moedBGrade}`, 'emerald');
+      });
+
+      // Add New Course Form Toggle & Submit
+      const addForm = document.getElementById('form-add-course');
+      document.getElementById('btn-toggle-add-course').addEventListener('click', () => {
+        addForm.classList.toggle('hidden');
+        if (!addForm.classList.contains('hidden')) {
+          document.getElementById('new-course-name').focus();
+        }
+      });
+      document.getElementById('btn-cancel-add-course').addEventListener('click', () => {
+        addForm.classList.add('hidden');
+      });
+
+      addForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const name = document.getElementById('new-course-name').value.trim();
+        if (!name) return;
+        const status = document.getElementById('new-course-status').value;
+        const grade = clampGrade(document.getElementById('new-course-grade').value);
+        const weight = clampWeight(document.getElementById('new-course-weight').value);
+
+        state.courses.unshift({
+          id: uidGen(),
+          name,
+          weight,
+          status,
+          officialGrade: grade,
+          moedBEnabled: false,
+          moedBGrade: Math.min(100, Math.max(95, grade + 10)),
+          targetGrade: grade
+        });
+
+        document.getElementById('new-course-name').value = '';
+        addForm.classList.add('hidden');
+        state.activeFilter = 'all';
+        renderAll(true);
+        showToast(`הקורס ״${name}״ נוסף בהצלחה`, 'emerald');
+      });
+
+      // Search & Filters
+      document.getElementById('input-search-courses').addEventListener('input', (e) => {
+        state.searchQuery = e.target.value;
+        renderCourses(computeMetrics());
+      });
+
+      document.querySelectorAll('.filter-tab').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          state.activeFilter = btn.dataset.filter;
+          renderCourses(computeMetrics());
+        });
+      });
+
+      document.getElementById('btn-clear-filters').addEventListener('click', () => {
+        state.activeFilter = 'all';
+        state.searchQuery = '';
+        document.getElementById('input-search-courses').value = '';
+        renderCourses(computeMetrics());
+      });
+
+      // Utilities: Reset Moed B & Copy WhatsApp Summary
+      document.getElementById('btn-reset-moedb').addEventListener('click', () => {
+        let count = 0;
+        state.courses.forEach((c) => {
+          if (c.moedBEnabled) {
+            c.moedBEnabled = false;
+            count++;
+          }
+        });
+        renderAll(true);
+        showToast(count > 0 ? `אופסו ${count} סימולציות מועד ב׳` : 'אין סימולציות מועד ב׳ פעילות לאיפוס', 'ocean');
+      });
+
+      document.getElementById('btn-copy-whatsapp').addEventListener('click', copyWhatsAppSummary);
+
+      // Chart Sort Buttons
+      document.querySelectorAll('.chart-sort-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          state.chartSort = btn.dataset.sort;
+          renderChart(computeMetrics());
+        });
+      });
+
+      // Delegated Course Card Events (Smooth live slider + instant CRUD)
+      const coursesGrid = document.getElementById('courses-grid');
+
+      coursesGrid.addEventListener('input', (e) => {
+        const el = e.target;
+        const action = el.dataset.action;
+        const id = el.dataset.id;
+        if (!action || !id) return;
+        const course = state.courses.find((c) => c.id === id);
+        if (!course) return;
+
+        if (action === 'official-slider') {
+          course.officialGrade = clampGrade(el.value);
+          const pair = coursesGrid.querySelector(`input[data-action="official-input"][data-id="${id}"]`);
+          if (pair) pair.value = course.officialGrade;
+          renderLiveSingleCourse(id);
+        } else if (action === 'official-input') {
+          if (el.value === '') return;
+          course.officialGrade = clampGrade(el.value);
+          const pair = coursesGrid.querySelector(`input[data-action="official-slider"][data-id="${id}"]`);
+          if (pair) pair.value = course.officialGrade;
+          renderLiveSingleCourse(id);
+        } else if (action === 'moedb-slider') {
+          course.moedBGrade = clampGrade(el.value);
+          const pair = coursesGrid.querySelector(`input[data-action="moedb-input"][data-id="${id}"]`);
+          if (pair) pair.value = course.moedBGrade;
+          renderLiveSingleCourse(id);
+        } else if (action === 'moedb-input') {
+          if (el.value === '') return;
+          course.moedBGrade = clampGrade(el.value);
+          const pair = coursesGrid.querySelector(`input[data-action="moedb-slider"][data-id="${id}"]`);
+          if (pair) pair.value = course.moedBGrade;
+          renderLiveSingleCourse(id);
+        } else if (action === 'target-slider') {
+          course.targetGrade = clampGrade(el.value);
+          const pair = coursesGrid.querySelector(`input[data-action="target-input"][data-id="${id}"]`);
+          if (pair) pair.value = course.targetGrade;
+          renderLiveSingleCourse(id);
+        } else if (action === 'target-input') {
+          if (el.value === '') return;
+          course.targetGrade = clampGrade(el.value);
+          const pair = coursesGrid.querySelector(`input[data-action="target-slider"][data-id="${id}"]`);
+          if (pair) pair.value = course.targetGrade;
+          renderLiveSingleCourse(id);
+        } else if (action === 'change-weight') {
+          if (el.value === '' || Number(el.value) <= 0) return;
+          course.weight = clampWeight(el.value);
+          renderLiveSingleCourse(id);
+        } else if (action === 'edit-name') {
+          course.name = el.value;
+          renderChart(computeMetrics());
+          scheduleCloudSave();
+        }
+      });
+
+      coursesGrid.addEventListener('change', (e) => {
+        const el = e.target;
+        const action = el.dataset.action;
+        const id = el.dataset.id;
+        if (!action || !id) return;
+        const course = state.courses.find((c) => c.id === id);
+        if (!course) return;
+
+        if (action === 'change-status') {
+          course.status = el.value;
+          renderAll(true);
+        } else if (action === 'toggle-moedb') {
+          course.moedBEnabled = el.checked;
+          if (course.moedBEnabled && course.moedBGrade <= course.officialGrade) {
+            course.moedBGrade = Math.min(100, Math.max(Math.ceil(state.targetGPA), course.officialGrade + 10));
+          }
+          renderAll(true);
+        } else if (action === 'edit-name') {
+          course.name = el.value.trim() || 'קורס ללא שם';
+          renderAll(true);
+        } else if (['official-slider', 'official-input', 'moedb-slider', 'moedb-input', 'target-slider', 'target-input', 'change-weight'].includes(action)) {
+          renderAll(true);
+        }
+      });
+
+      coursesGrid.addEventListener('click', (e) => {
+        const btn = e.target.closest('button[data-action]');
+        if (!btn) return;
+        const action = btn.dataset.action;
+        const id = btn.dataset.id;
+        const course = state.courses.find((c) => c.id === id);
+        if (!course) return;
+
+        if (action === 'delete-course') {
+          state.courses = state.courses.filter((c) => c.id !== id);
+          renderAll(true);
+          showToast(`הקורס ״${course.name}״ הוסר מהרשימה`, 'amber');
+        } else if (action === 'mark-completed') {
+          course.status = 'completed';
+          course.officialGrade = course.targetGrade;
+          course.moedBEnabled = false;
+          course.moedBGrade = Math.min(100, Math.max(Math.ceil(state.targetGPA), course.officialGrade + 10));
+          renderAll(true);
+          showToast(`״${course.name}״ הועבר לנבחנתי עם ציון ${course.officialGrade}`, 'emerald');
+        } else if (action === 'reactivate-course') {
+          course.status = 'upcoming';
+          renderAll(true);
+          showToast(`״${course.name}״ הוחזר לחישוב הממוצע`, 'ocean');
+        }
+      });
+    }
+
+    /**
+     * =======================================================================
+     * 9. BOOTSTRAP APPLICATION
+     * =======================================================================
+     */
+    window.addEventListener('DOMContentLoaded', () => {
+      applyTheme(state.theme);
+      bindEvents();
+      renderAll(false);
+      initFirebase();
+    });
+  </script>
+</body>
+</html>
